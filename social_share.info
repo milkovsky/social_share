@@ -1,0 +1,4 @@
+name = Social Share
+description = "Adds configurable social network share links to nodes."
+core = 6.x
+version = 6.x-1.0
