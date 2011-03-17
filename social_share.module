@@ -10,7 +10,7 @@
  */
 function social_share_menu() {
   $items = array();
-  $items['admin/settings/simple-share'] = array(
+  $items['admin/settings/social-share'] = array(
     'title'            => t('Social Share'),
     'description'      => t('Configure share link styling.'),
     'page callback'    => 'drupal_get_form',
