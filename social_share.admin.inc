@@ -9,12 +9,17 @@
  * Menu callback; Settings administration.
  */
 function social_share_admin_settings() {
+  $types = node_type_get_types();
+  foreach ($types as $type) {
+    $node_types[$type->type] = $type->name;
+  }
+
   $form['social_share_node_types'] = array(
     '#type'          => 'checkboxes',
     '#title'         => t('Node types'),
     '#description'   => t('Choose which node types to display the share links on.'),
     '#default_value' => variable_get('social_share_node_types', array()),
-    '#options'       => node_get_types('names'),
+    '#options'       => $node_types,
   );
 
   $form['social_share_teaser'] = array(
@@ -22,6 +27,12 @@ function social_share_admin_settings() {
     '#title'         => t('Display in teaser view'),
     '#description'   => t('If enabled, the share links will appear in node teasers. If disabled, they will only appear on the full node page.'),
     '#default_value' => variable_get('social_share_teaser', 1),
+  );
+
+  $form['social_share_label'] = array(
+    '#type'          => 'textfield',
+    '#title'         => t('Share label'),
+    '#default_value' => variable_get('social_share_label', 'Share to'),
   );
 
   $form['social_share_weight'] = array(
