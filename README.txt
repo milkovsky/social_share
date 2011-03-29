@@ -12,6 +12,7 @@ Links can be added for these social networks:
  - Yahoo
  - Linked In
  - Orkut
+ - Digg
 
 Links are added to all nodes of the types configured to allow it, and appear with a class name
 based on the social network being shared to.
