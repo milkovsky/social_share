@@ -59,6 +59,7 @@ function _social_share_link($site, $node) {
   $sites['yahoo']      = array('name' => 'Yahoo', 'url' => 'http://bookmarks.yahoo.com/toolbar/savebm?opener=tb&u=%URL%&t=%TITLE%&d=%DESC%');
   $sites['linkedin']   = array('name' => 'LinkedIn', 'url' => 'http://www.linkedin.com/shareArticle?url=%URL%&mini=true&title=%TITLE%&ro=false&summary=%DESC%&source=');
   $sites['orkut']      = array('name' => 'Orkut', 'url' => 'http://promote.orkut.com/preview?nt=orkut.com&tt=%TITLE%&du=%URL%&cn=%DESC%');
+  $sites['digg']       = array('name' => 'Digg', 'url' => 'http://dig.com/share?url=%URL%');
 
   // check for an alias on the node
   $row = db_query("SELECT alias FROM {url_alias} WHERE source = :src", array(':src' => 'node/'. $node->nid));

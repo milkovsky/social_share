@@ -56,7 +56,8 @@ function social_share_admin_settings() {
       'msnlive'      => t('MSN Live'),
       'yahoo'        => t('Yahoo'),
       'linkedin'     => t('LinkedIn'),
-      'orkut'        => t('Orkut')
+      'orkut'        => t('Orkut'),
+      'digg'         => t('Digg'),
     ),
   );
 
