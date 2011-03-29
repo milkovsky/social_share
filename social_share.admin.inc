@@ -29,6 +29,13 @@ function social_share_admin_settings() {
     '#default_value' => variable_get('social_share_teaser', 1),
   );
 
+  $form['social_share_new_window'] = array(
+    '#type'          => 'checkbox',
+    '#title'         => t('Open Links in new window'),
+    '#description'   => t('If enabled, the share links will open in a new window'),
+    '#default_value' => variable_get('social_share_new_window', 0),
+  );
+
   $form['social_share_label'] = array(
     '#type'          => 'textfield',
     '#title'         => t('Share label'),

@@ -87,11 +87,16 @@ function _social_share_link($site, $node) {
     urlencode(strip_tags(strlen($node->body['und'][0]['safe_value']) > $maxDescLength ? substr($node->body['und'][0]['safe_value'], 0, $maxDescLength) .'...' : $node->body['und'][0]['safe_value']))
   );
 
+  $options = array('attributes' => array('class' => 'social-share-'. $site));
+  if (variable_get('social_share_new_window', 0)) {
+    $options['attributes']['target'] = '_blank';
+  }
+
   $link = array(
     '#type'    => 'link',
     '#title'   => $sites[$site]['name'],
     '#href'    => str_replace($placeholders, $replacements, $sites[$site]['url']),
-    '#options' => array('attributes' => array('class' => 'social-share-'. $site)),
+    '#options' => $options,
     '#suffix'  => '&nbsp;',
   );
 
