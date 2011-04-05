@@ -62,10 +62,15 @@ function _social_share_link($site, $node) {
   $sites['digg']       = array('name' => 'Digg', 'url' => 'http://dig.com/share?url=%URL%');
 
   // check for an alias on the node
-  $row = db_query("SELECT alias FROM {url_alias} WHERE source = :src", array(':src' => 'node/'. $node->nid));
-  $alias = $row->fetchColumn();
-  $url = $base_url .'/'. ($alias ? $alias : 'node/'. $node->nid);
-
+  if (!isset($node->link)) {
+    $row = db_query("SELECT alias FROM {url_alias} WHERE source = :src", array(':src' => 'node/'. $node->nid));
+    $alias = $row->fetchColumn();
+    $url = $base_url .'/'. ($alias ? $alias : 'node/'. $node->nid);
+  }
+  else {
+    $url = $node->link;
+  }
+  
   // switch out placeholders with node information
   $maxDescLength = variable_get('social_share_max_desc_length', 50);
   $target = variable_get('social_share_target', 0);
@@ -80,11 +85,18 @@ function _social_share_link($site, $node) {
   // @TODO
   // Ensure title & url passed to twitter do not exceed twitter limits of 140chars
   // Possibly utilize url shortener if available.
-
+  
+  if (isset($node->body)) {
+    $body = $node->body['und'][0]['safe_value'];
+  }
+  else {
+    $body = '';
+  }
+  
   $replacements = array(
     urlencode($node->title),
     $url,
-    urlencode(strip_tags(strlen($node->body['und'][0]['safe_value']) > $maxDescLength ? substr($node->body['und'][0]['safe_value'], 0, $maxDescLength) .'...' : $node->body['und'][0]['safe_value']))
+    urlencode(strip_tags(strlen($body) > $maxDescLength ? substr($body, 0, $maxDescLength) .'...' : $body))
   );
 
   $options = array('attributes' => array('class' => 'social-share-'. $site));
@@ -103,3 +115,48 @@ function _social_share_link($site, $node) {
   // Return the link
   return $link;
 }
+
+/**
+ * Implements hook_block_info().
+ */
+function social_share_block_info() {
+  $blocks = array();
+  if (variable_get('social_share_block', 0)!=0 ) {
+    $blocks['social_share'] = array(
+      'info'       => t('Social Share'),
+      'visibility' => 1,
+      'status'     =>TRUE,
+      'region'     => 'header',
+      'weight'     => 0,
+    );
+  }
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function social_share_block_view($delta = '') {
+  // This example comes from node.module. Note that you can also return a
+  // renderable array rather than rendered HTML for 'content'.
+  $block = array();
+  if (user_access('access content') && variable_get('social_share_block', 0)!=0 ) {
+    $block['subject'] = t('Social Share');
+      $sites = variable_get('social_share_sites', array());
+      $node = node_load(arg(1));
+      if (!isset($node->nid)) {
+        $path = isset($_GET['q']) ? $_GET['q'] : '<front>';
+        $node->link = url($path, array('absolute' => TRUE));
+      }
+      if (!isset($node->title)) {
+        $node->title = variable_get('site_name', "");
+      }
+      foreach ($sites as $site => $enabled) {
+        if ($enabled) {
+          $block['content']['social_share'][] = _social_share_link($site, $node);
+        }
+      }
+  }
+  return $block;
+}
+
