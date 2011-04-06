@@ -47,7 +47,6 @@ function social_share_node_view($node, $view_mode, $language) {
   }
 }
 
-
 function _social_share_link($site, $node) {
   global $base_url;
   // define the share links
@@ -70,7 +69,7 @@ function _social_share_link($site, $node) {
   else {
     $url = $node->link;
   }
-  
+
   // switch out placeholders with node information
   $maxDescLength = variable_get('social_share_max_desc_length', 50);
   $target = variable_get('social_share_target', 0);
@@ -85,14 +84,15 @@ function _social_share_link($site, $node) {
   // @TODO
   // Ensure title & url passed to twitter do not exceed twitter limits of 140chars
   // Possibly utilize url shortener if available.
-  
-  if (isset($node->body)) {
-    $body = $node->body['und'][0]['safe_value'];
+
+  if (isset($node->nid)) {
+    $body = field_get_items('node', $node, 'body');
+    $body = (!empty($body)) ? $body[0]['safe_value'] : '';
   }
   else {
     $body = '';
   }
-  
+
   $replacements = array(
     urlencode($node->title),
     $url,
