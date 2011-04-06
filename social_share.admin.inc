@@ -36,6 +36,13 @@ function social_share_admin_settings() {
     '#default_value' => variable_get('social_share_new_window', 0),
   );
 
+  $form['social_share_block'] = array(
+    '#type'          => 'checkbox',
+    '#title'         => t('Make links available as a block'),
+    '#description'   => t('If enabled, the share links will be available in a block called "Social Share"'),
+    '#default_value' => variable_get('social_share_block', 0),
+  );
+
   $form['social_share_label'] = array(
     '#type'          => 'textfield',
     '#title'         => t('Share label'),
