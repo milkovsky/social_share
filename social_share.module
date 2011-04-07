@@ -70,6 +70,11 @@ function _social_share_link($site, $node) {
     $url = $node->link;
   }
 
+  // if the shorten_urls module is installed & enabled, shorten the url being shared.
+  if (module_exists('shorten')) {
+    $url = shorten_url($url);
+  }
+
   // switch out placeholders with node information
   $maxDescLength = variable_get('social_share_max_desc_length', 50);
   $target = variable_get('social_share_target', 0);
@@ -80,11 +85,6 @@ function _social_share_link($site, $node) {
     '%DESC%'
   );
 
-
-  // @TODO
-  // Ensure title & url passed to twitter do not exceed twitter limits of 140chars
-  // Possibly utilize url shortener if available.
-
   if (isset($node->nid)) {
     $body = field_get_items('node', $node, 'body');
     $body = (!empty($body)) ? $body[0]['safe_value'] : '';
@@ -93,8 +93,21 @@ function _social_share_link($site, $node) {
     $body = '';
   }
 
+  // Trim title so it will fit in a tweet.
+  if ($site == 'twitter') {
+    if ((strlen($url) + strlen($node->title)) > 140) {
+      $length = 136 - strlen($url);
+      $title  = substr($node->title, 0, $length);
+      $title .= '...';
+    }
+  }
+
+  if (!isset($title) || $title == '') {
+    $title = $node->title;
+  }
+
   $replacements = array(
-    urlencode($node->title),
+    urlencode($title),
     $url,
     urlencode(strip_tags(strlen($body) > $maxDescLength ? substr($body, 0, $maxDescLength) .'...' : $body))
   );
