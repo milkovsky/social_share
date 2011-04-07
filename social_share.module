@@ -59,6 +59,7 @@ function _social_share_link($site, $node) {
   $sites['linkedin']   = array('name' => 'LinkedIn', 'url' => 'http://www.linkedin.com/shareArticle?url=%URL%&amp;mini=true&amp;title=%TITLE%&amp;ro=false&amp;summary=%DESC%&amp;source=');
   $sites['orkut']      = array('name' => 'Orkut', 'url' => 'http://promote.orkut.com/preview?nt=orkut.com&amp;tt=%TITLE%&amp;du=%URL%&amp;cn=%DESC%');
   $sites['digg']       = array('name' => 'Digg', 'url' => 'http://dig.com/share?url=%URL%&amp;title=%TITLE%');
+  $sites['delicious'   = array('name' => 'Delicious', 'url' => 'http://www.delicious.com/save?v=5&amp;noui&amp;jump=close&amp;url=%URL%&amp;title=%TITLE%');
 
   // check for an alias on the node
   if (!isset($node->link)) {

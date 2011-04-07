@@ -72,6 +72,7 @@ function social_share_admin_settings() {
       'linkedin'     => t('LinkedIn'),
       'orkut'        => t('Orkut'),
       'digg'         => t('Digg'),
+      'delicious'    => t('Delicious'),
     ),
   );
 
