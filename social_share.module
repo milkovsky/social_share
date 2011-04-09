@@ -51,7 +51,7 @@ function _social_share_link($site, $node) {
   global $base_url;
   // define the share links
   $sites['facebook']   = array('name' => 'Facebook', 'url' => 'http://facebook.com/sharer.php?u=%URL%&amp;t=%TITLE%');
-  $sites['twitter']    = array('name' => 'Twitter', 'url' => 'http://twitter.com/share?url=%URL%&amp;text=%TITLE%');
+  $sites['twitter']    = array('name' => 'Twitter', 'url' => 'http://twitter.com/intent/tweet?url=%URL%&amp;text=%TITLE%');
   $sites['googlebuzz'] = array('name' => 'Google Buzz', 'url' => 'http://www.google.com/buzz/post?url=%URL%&amp;message=%TITLE%');
   $sites['myspace']    = array('name' => 'Myspace', 'url' => 'http://www.myspace.com/Modules/PostTo/Pages/default.aspx?u=%URL%&amp;c=%TITLE%');
   $sites['msnlive']    = array('name' => 'MSN Live', 'url' => 'http://profile.live.com/badge/?url=%URL%&amp;title=%TITLE%&amp;description=%DESC%');
