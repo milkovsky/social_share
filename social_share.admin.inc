@@ -76,6 +76,16 @@ function social_share_admin_settings() {
     ),
   );
 
+  $form['social_share_twitter_method'] = array(
+    '#type'          => 'radios',
+    '#default_value' => variable_get('social_share_twitter_method', 'original'),
+    '#options'       => array(
+      'original'     => t('Old style, setting status only.'),
+      'new'          => t('New style, uses twitters URL sharing feature.'),
+    ),
+    '#title'         => t('Twitter share method'),
+  );
+
   $form['social_share_max_desc_length'] = array(
     '#type'          => 'textfield',
     '#maxlength'     => 3,
