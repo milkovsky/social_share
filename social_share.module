@@ -40,8 +40,9 @@ function social_share_node_view($node, $view_mode, $language) {
       }
 
       // put the shareBox into the node before it's rendered
+      $suffix = (variable_get('social_share_label') == '') ? '' : ': ';
       $node->content['social_share']['#weight'] = variable_get('social_share_weight', 0);
-      $node->content['social_share']['#prefix'] = '<div class="social-share"><span>'. variable_get('social_share_label', 'Share to') .': </span>';
+      $node->content['social_share']['#prefix'] = '<div class="social-share"><span>'. variable_get('social_share_label', 'Share to') . $suffix .'</span>';
       $node->content['social_share']['#suffix'] = '</div>';
     }
   }
@@ -52,10 +53,10 @@ function _social_share_link($site, $node) {
   // define the share links
   $sites['facebook']   = array('name' => 'Facebook', 'url' => 'http://facebook.com/sharer.php?u=%URL%&amp;t=%TITLE%');
   if (variable_get('social_share_twitter_method', 'original') == 'original') {
-    $sites['twitter']    = array('name' => 'Twitter', 'url' => 'http://twitter.com/status?=%TITLE%+%URL%');
+    $sites['twitter']  = array('name' => 'Twitter', 'url' => 'http://twitter.com/status?=%TITLE%+%URL%');
   }
   else {
-    $sites['twitter']    = array('name' => 'Twitter', 'url' => 'http://twitter.com/intent/tweet?url=%URL%&amp;text=%TITLE%');
+    $sites['twitter']  = array('name' => 'Twitter', 'url' => 'http://twitter.com/intent/tweet?url=%URL%&amp;text=%TITLE%');
   }
   $sites['googlebuzz'] = array('name' => 'Google Buzz', 'url' => 'http://www.google.com/buzz/post?url=%URL%&amp;message=%TITLE%');
   $sites['myspace']    = array('name' => 'Myspace', 'url' => 'http://www.myspace.com/Modules/PostTo/Pages/default.aspx?u=%URL%&amp;c=%TITLE%');
