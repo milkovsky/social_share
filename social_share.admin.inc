@@ -86,6 +86,14 @@ function social_share_admin_settings() {
     '#title'         => t('Twitter share method'),
   );
 
+  $form['social_share_twitter_truncate'] = array(
+    '#type'          => 'checkbox',
+    '#title'         => t('Truncate titles when sharing to twitter'),
+    '#description'   => t('If enabled, node titles will be truncated if the URL being shared and the title exceed the twitter character limit of 140
+       characters. <strong>NOTE:</strong> Enabling this may cause issues with unicode text (Arabic, Kanji, etc)'),
+    '#default_value' => variable_get('social_share_twitter_truncate', 0),
+  );
+
   $form['social_share_max_desc_length'] = array(
     '#type'          => 'textfield',
     '#maxlength'     => 3,

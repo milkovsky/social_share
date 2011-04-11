@@ -101,7 +101,7 @@ function _social_share_link($site, $node) {
   }
 
   // Trim title so it will fit in a tweet.
-  if ($site == 'twitter') {
+  if ($site == 'twitter' && variable_get('social_share_twitter_truncate', 0)) {
     if ((strlen($url) + strlen($node->title)) > 140) {
       $length = 136 - strlen($url);
       $title  = substr($node->title, 0, $length);
