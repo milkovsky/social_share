@@ -94,7 +94,12 @@ function _social_share_link($site, $node) {
 
   if (isset($node->nid)) {
     $body = field_get_items('node', $node, 'body');
-    $body = (!empty($body)) ? $body[0]['safe_value'] : '';
+    if (!empty($body) && $body[0]['format'] == 'php_code') {
+      $body = $body[0]['value'];
+    }
+    else {
+      $body = (!empty($body)) ? $body[0]['safe_value'] : '';
+    }
   }
   else {
     $body = '';
