@@ -102,6 +102,5 @@ function social_share_admin_settings() {
     '#title'         => t('Maximum description length'),
     '#default_value' => variable_get('social_share_max_desc_length', 50),
   );
-
   return system_settings_form($form);
 }
