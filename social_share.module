@@ -98,7 +98,7 @@ function _social_share_link($site, $node) {
       $body = $body[0]['value'];
     }
     else {
-      $body = (!empty($body) && isset($body[0]['safe_value']) ? $body[0]['safe_value'] : '';
+      $body = (!empty($body) && isset($body[0]['safe_value'])) ? $body[0]['safe_value'] : '';
     }
   }
   else {
