@@ -49,7 +49,6 @@ function social_share_node_view($node, $view_mode, $language) {
 }
 
 function _social_share_link($site, $node) {
-  global $base_url;
   // define the share links
   $sites['facebook']   = array('name' => 'Facebook', 'url' => 'http://facebook.com/sharer.php?u=%URL%&amp;t=%TITLE%');
   if (variable_get('social_share_twitter_method', 'original') == 'original') {
@@ -67,15 +66,8 @@ function _social_share_link($site, $node) {
   $sites['digg']       = array('name' => 'Digg', 'url' => 'http://digg.com/share?url=%URL%&amp;title=%TITLE%');
   $sites['delicious']   = array('name' => 'Delicious', 'url' => 'http://www.delicious.com/save?v=5&amp;noui&amp;jump=close&amp;url=%URL%&amp;title=%TITLE%');
 
-  // check for an alias on the node
-  if (!isset($node->link)) {
-    $row = db_query("SELECT alias FROM {url_alias} WHERE source = :src", array(':src' => 'node/'. $node->nid));
-    $alias = $row->fetchColumn();
-    $url = $base_url .'/'. ($alias ? $alias : 'node/'. $node->nid);
-  }
-  else {
-    $url = $node->link;
-  }
+  // get the URL for the node, using path aliases if available
+  $url = url('node/' . $node->nid, array('absolute' => true));
 
   // if the shorten_urls module is installed & enabled, shorten the url being shared.
   if (module_exists('shorten')) {
