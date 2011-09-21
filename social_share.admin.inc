@@ -106,6 +106,7 @@ function social_share_admin_settings() {
       'reddit'       => t('Reddit'),
       'stumbleupon'  => t('StumbleUpon'),
       'furl'         => t('Furl'),
+      'hyves'        => t('Hyves'),
     ),
   );
 
