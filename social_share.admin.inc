@@ -76,7 +76,7 @@ function social_share_admin_settings() {
       '#type'          => 'textfield',
       '#title'         => $lang_title,
       '#default_value' => (isset($labels[$lang_code])) ? $labels[$lang_code] : '',
-    )
+    );
   }
 
   $form['social_share_weight'] = array(
