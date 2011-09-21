@@ -43,11 +43,41 @@ function social_share_admin_settings() {
     '#default_value' => variable_get('social_share_block', 0),
   );
 
-  $form['social_share_label'] = array(
-    '#type'          => 'textfield',
-    '#title'         => t('Share label'),
-    '#default_value' => variable_get('social_share_label', 'Share to'),
-  );
+  $site_languages = language_list();
+  $labels = variable_get('social_share_label', array('en' => t('Share to')));
+  if (count($site_languages) > 1) {
+    $form['social_share_label'] = array(
+      '#type'          => 'fieldset',
+      '#title'         => t('Share label (by language)'),
+      '#collapsible'   => TRUE,
+      '#collapsed'     => (count($site_languages) > 3) ? TRUE : FALSE,
+      '#tree'          => TRUE,
+    );
+  }
+  else {
+    $form['social_share_label'] = array(
+      '#type'          => 'markup',
+      '#tree'          => TRUE,
+    );
+  }
+  foreach($site_languages as $lang_code => $lang) {
+    if (count($site_languages) > 1) {
+      if ($lang->name != $lang->native) {
+        $lang_title = $lang->name .' ('. $lang->native .')';
+      }
+      else {
+        $lang_title = $lang->name;
+      }
+    }
+    else {
+      $lang_title = t('Share label');
+    }
+    $form['social_share_label'][$lang_code] = array(
+      '#type'          => 'textfield',
+      '#title'         => $lang_title,
+      '#default_value' => (isset($labels[$lang_code])) ? $labels[$lang_code] : '';
+    )
+  }
 
   $form['social_share_weight'] = array(
     '#type'          => 'weight',
@@ -73,6 +103,9 @@ function social_share_admin_settings() {
       'orkut'        => t('Orkut'),
       'digg'         => t('Digg'),
       'delicious'    => t('Delicious'),
+      'reddit'       => t('Reddit'),
+      'stumbleupon'  => t('StumbleUpon'),
+      'furl'         => t('Furl'),
     ),
   );
 

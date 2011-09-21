@@ -1,5 +1,6 @@
 name = Social Share
 description = "Adds configurable social network share links to nodes."
 core = 7.x
+configure = admin/config/content/social-share
 files[] = social_share.module
 files[] = social_share.admin.inc

@@ -38,11 +38,17 @@ function social_share_node_view($node, $view_mode, $language) {
           $node->content['social_share'][] = _social_share_link($site, $node);
         }
       }
-
+      $labels = variable_get('social_share_label', array('en' => t('Share to')));
+      global $language;
+      if (isset($labels[$language->language])) {
+        $share_label = $labels[$language->language] .': ';
+      }
+      else {
+        $share_label = '';
+      }
       // put the shareBox into the node before it's rendered
-      $suffix = (variable_get('social_share_label') == '') ? '' : ': ';
       $node->content['social_share']['#weight'] = variable_get('social_share_weight', 0);
-      $node->content['social_share']['#prefix'] = '<div class="social-share"><span>'. variable_get('social_share_label', 'Share to') . $suffix .'</span>';
+      $node->content['social_share']['#prefix'] = '<div class="social-share"><span>'. $share_label .'</span>';
       $node->content['social_share']['#suffix'] = '</div>';
     }
   }
@@ -50,21 +56,24 @@ function social_share_node_view($node, $view_mode, $language) {
 
 function _social_share_link($site, $node) {
   // define the share links
-  $sites['facebook']   = array('name' => 'Facebook', 'url' => 'http://facebook.com/sharer.php?u=%URL%&t=%TITLE%');
+  $sites['facebook']    = array('name' => 'Facebook', 'url' => 'http://facebook.com/sharer.php?u=%URL%&t=%TITLE%');
   if (variable_get('social_share_twitter_method', 'original') == 'original') {
-    $sites['twitter']  = array('name' => 'Twitter', 'url' => 'http://twitter.com/status?=%TITLE%+%URL%');
+    $sites['twitter']   = array('name' => 'Twitter', 'url' => 'http://twitter.com/status?=%TITLE%+%URL%');
   }
   else {
-    $sites['twitter']  = array('name' => 'Twitter', 'url' => 'http://twitter.com/intent/tweet?url=%URL%&text=%TITLE%');
+    $sites['twitter']   = array('name' => 'Twitter', 'url' => 'http://twitter.com/intent/tweet?url=%URL%&text=%TITLE%');
   }
-  $sites['googlebuzz'] = array('name' => 'Google Buzz', 'url' => 'http://www.google.com/buzz/post?url=%URL%&message=%TITLE%');
-  $sites['myspace']    = array('name' => 'Myspace', 'url' => 'http://www.myspace.com/Modules/PostTo/Pages/default.aspx?u=%URL%&c=%TITLE%');
-  $sites['msnlive']    = array('name' => 'MSN Live', 'url' => 'http://profile.live.com/badge/?url=%URL%&title=%TITLE%&description=%DESC%');
-  $sites['yahoo']      = array('name' => 'Yahoo', 'url' => 'http://bookmarks.yahoo.com/toolbar/savebm?opener=tb&u=%URL%&t=%TITLE%&d=%DESC%');
-  $sites['linkedin']   = array('name' => 'LinkedIn', 'url' => 'http://www.linkedin.com/shareArticle?url=%URL%&mini=true&title=%TITLE%&ro=false&summary=%DESC%&source=');
-  $sites['orkut']      = array('name' => 'Orkut', 'url' => 'http://promote.orkut.com/preview?nt=orkut.com&tt=%TITLE%&du=%URL%&cn=%DESC%');
-  $sites['digg']       = array('name' => 'Digg', 'url' => 'http://digg.com/share?url=%URL%&title=%TITLE%');
+  $sites['googlebuzz']  = array('name' => 'Google Buzz', 'url' => 'http://www.google.com/buzz/post?url=%URL%&message=%TITLE%');
+  $sites['myspace']     = array('name' => 'Myspace', 'url' => 'http://www.myspace.com/Modules/PostTo/Pages/default.aspx?u=%URL%&c=%TITLE%');
+  $sites['msnlive']     = array('name' => 'MSN Live', 'url' => 'http://profile.live.com/badge/?url=%URL%&title=%TITLE%&description=%DESC%');
+  $sites['yahoo']       = array('name' => 'Yahoo', 'url' => 'http://bookmarks.yahoo.com/toolbar/savebm?opener=tb&u=%URL%&t=%TITLE%&d=%DESC%');
+  $sites['linkedin']    = array('name' => 'LinkedIn', 'url' => 'http://www.linkedin.com/shareArticle?url=%URL%&mini=true&title=%TITLE%&ro=false&summary=%DESC%&source=');
+  $sites['orkut']       = array('name' => 'Orkut', 'url' => 'http://promote.orkut.com/preview?nt=orkut.com&tt=%TITLE%&du=%URL%&cn=%DESC%');
+  $sites['digg']        = array('name' => 'Digg', 'url' => 'http://digg.com/share?url=%URL%&title=%TITLE%');
   $sites['delicious']   = array('name' => 'Delicious', 'url' => 'http://www.delicious.com/save?v=5&noui&jump=close&url=%URL%&title=%TITLE%');
+  $sites['reddit']      = array('name' => 'Reddit', 'url' => 'http://reddit.com/submit?url=%URL%&title=%TITLE%');
+  $sites['stumbleupon'] = array('name' => 'StumbleUpon', 'url' => 'http://stumbleupon.com/submit?url=%URL%&title=%TITLE%');
+  $sites['furl']        = array('name' => 'Furl', 'url' => 'http://furl.net/storeIt.jsp?t=%TITLE%&u=%URL%');
 
   // get the URL for the node, using path aliases if available
   $url = url('node/' . $node->nid, array('absolute' => true));
