@@ -75,7 +75,7 @@ function social_share_admin_settings() {
     $form['social_share_label'][$lang_code] = array(
       '#type'          => 'textfield',
       '#title'         => $lang_title,
-      '#default_value' => (isset($labels[$lang_code])) ? $labels[$lang_code] : '';
+      '#default_value' => (isset($labels[$lang_code])) ? $labels[$lang_code] : '',
     )
   }
 
