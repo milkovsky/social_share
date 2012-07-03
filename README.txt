@@ -25,7 +25,14 @@ Example:
 This facilitates styling the links as icons, or whatever best suits the site.
 
 
+ICONS
+=======
+Beginning with the 2.x branch, an icon pack based on the GPL licensed social media icon set
+released by elegantthemes.com are included. These icons can be optionally enabled via the
+admin config in 16px or 32px sizes.
+
+
 AUTHOR/MAINTAINER
 ======================
-Author: Cam Pedersen
+Original Author: Cam Pedersen
 Maintainer: Will Vincent (will DOT vincent AT nerdery DOT com)
