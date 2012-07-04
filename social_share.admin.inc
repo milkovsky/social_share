@@ -79,14 +79,6 @@ function social_share_admin_settings() {
     );
   }
 
-  $form['social_share_weight'] = array(
-    '#type'          => 'weight',
-    '#delta'         => 10,
-    '#description'   => t('Where you want the share links to appear in the node. Negative numbers are rendered earlier, positive numbers are rendered later.'),
-    '#title'         => t('Weight'),
-    '#default_value' => variable_get('social_share_weight', 0),
-  );
-
   $form['social_share_sites'] = array(
     '#type'          => 'checkboxes',
     '#title'         => t('Enabled share links'),
