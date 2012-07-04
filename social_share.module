@@ -47,8 +47,7 @@ function social_share_node_view($node, $view_mode, $language) {
         $share_label = '';
       }
       // put the shareBox into the node before it's rendered
-      $node->content['social_share']['#weight'] = variable_get('social_share_weight', 0);
-      $node->content['social_share']['#prefix'] = '<div class="social-share"><span>'. $share_label .'</span>';
+      $node->content['social_share']['#prefix'] = '<div class="social-share clearfix"><span>'. $share_label .'</span>';
       $node->content['social_share']['#suffix'] = '</div>';
       $icon_setting = variable_get('social_share_icons', 'none');
       if ($icon_setting != 'none') {
@@ -168,6 +167,7 @@ function _social_share_link($site, $node) {
   $options = array('attributes' => array('class' => 'social-share-'. $site));
   if (variable_get('social_share_new_window', 0)) {
     $options['attributes']['target'] = '_blank';
+    $options['attributes']['title'] = $sites[$site]['name'];
   }
 
   $link = array(
@@ -191,7 +191,7 @@ function social_share_block_info() {
     $blocks['social_share'] = array(
       'info'       => t('Social Share'),
       'visibility' => 1,
-      'status'     =>TRUE,
+      'status'     => TRUE,
       'region'     => 'header',
       'weight'     => 0,
     );
@@ -226,3 +226,23 @@ function social_share_block_view($delta = '') {
   return $block;
 }
 
+/**
+ * Implements hook_field_extra_fields().
+ */
+function social_share_field_extra_fields() {
+  $items = array();
+  $node_types = variable_get('social_share_node_types', array());
+  foreach ($node_types as $type => $active) {
+    if ($active) {
+      $items['node'][$type]['display'] = array(
+        'social_share'  => array(
+          'label'       => t('Social Share'),
+          'description' => t('Social Share Links'),
+          'weight'      => 10,
+        ),
+      );
+    }
+  }
+
+  return $items;
+}
