@@ -115,7 +115,7 @@ function _social_share_link($site, $node) {
   );
 
   // get the URL for the node, using path aliases if available
-  $url = url('node/' . $node->nid, array('absolute' => true, 'alias' => true));
+  $url = url('node/' . $node->nid, array('absolute' => true));
 
   // if the shorten_urls module is installed & enabled, shorten the url being shared.
   if (module_exists('shorten')) {
