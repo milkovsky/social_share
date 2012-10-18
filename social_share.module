@@ -194,6 +194,7 @@ function social_share_block_info() {
       'status'     => TRUE,
       'region'     => 'header',
       'weight'     => 0,
+      'cache'      => DRUPAL_NO_CACHE,
     );
   }
   return $blocks;
