@@ -10,24 +10,18 @@
  */
 function social_share_admin_settings() {
   $types = node_type_get_types();
+  $form['node_types'] = array(
+    '#prefix' => '<label>' . t('Node types') . '</label>',
+    '#suffix' => '<br />',
+  );
   foreach ($types as $type) {
     $node_types[$type->type] = $type->name;
+    $form['node_types']['social_share_enabled_'. $type->type] = array(
+      '#type' => 'checkbox',
+      '#title' => $type->name . '<small> [' . l('edit', 'admin/structure/types/manage/' . $type->type) . ']</small>',
+      '#default_value' => variable_get('social_share_enabled_' . $type->type, 0),
+    );
   }
-
-  $form['social_share_node_types'] = array(
-    '#type'          => 'checkboxes',
-    '#title'         => t('Node types'),
-    '#description'   => t('Choose which node types to display the share links on.'),
-    '#default_value' => variable_get('social_share_node_types', array()),
-    '#options'       => $node_types,
-  );
-
-  $form['social_share_teaser'] = array(
-    '#type'          => 'checkbox',
-    '#title'         => t('Display in teaser view'),
-    '#description'   => t('If enabled, the share links will appear in node teasers. If disabled, they will only appear on the full node page.'),
-    '#default_value' => variable_get('social_share_teaser', 1),
-  );
 
   $form['social_share_new_window'] = array(
     '#type'          => 'checkbox',
@@ -116,18 +110,6 @@ function social_share_admin_settings() {
     '#description'   => t('Define the maximum description length passed through the link. Anything over 100 is excessive.'),
     '#title'         => t('Maximum description length'),
     '#default_value' => variable_get('social_share_max_desc_length', 50),
-  );
-
-  $form['social_share_icons'] = array(
-    '#type'          => 'select',
-    '#title'         => t('Icons'),
-    '#description'   => t('Select an icon pack to use (small 16px / large 32px) or None <em>(default)</em><br /><strong>NOTE:</strong> If you want to provide your own icons, or prefer text links, select none and add css as needed to your theme.'),
-    '#default_value' => variable_get('social_share_icons', 'none'),
-    '#options'       => array(
-      'none'         => t('None'),
-      '16'           => t('Small 16px'),
-      '32'           => t('Large 32px'),
-    ),
   );
 
   return system_settings_form($form);
