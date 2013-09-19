@@ -331,6 +331,11 @@ function social_share_available_networks() {
       'human_name'   => t('Hyves'),
       'url'          => 'http://www.hyves-share.nl/button/tip/?tipcategoryid=12&rating=5&title=%TITLE%&body=%DESC%Bron: [url=%URL%]%URL%[/url]',
     ),
+    array(
+      'machine_name' => 'pinterest',
+      'human_name'   => t('Pinterest'),
+      'url'          => 'http://pinterest.com/pin/create/button/?url=%URL%&media=%IMAGE%&description=%DESC%',
+    ),
   );
 }
 
