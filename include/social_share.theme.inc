@@ -53,15 +53,12 @@ function theme_social_share_links($variables) {
  * Theme function to render a single social share link (for a node)
  */
 function theme_social_share_link($variables) {
-  $networks = social_share_available_networks();
-  if (!isset($variables['network']) ||
-     (isset($variables['network']) && !in_array($variables['network'], $networks)) ||
-     !isset($variables['node'])) {
+  if (!isset($variables['network']) || !isset($variables['node'])) {
     return array();
   }
 
   extract($variables);
-  $network = $networks[$network];
+  $network = social_share_get_network($network);
   global $language;
 
   $data = array('node' => $node);
@@ -73,6 +70,8 @@ function theme_social_share_link($variables) {
     '%URL%'   => token_replace(variable_get('social_share_url_' . $node->type, '[node:url:absolute]'), $data, $options),
     '%IMAGE%' => token_replace(variable_get('social_share_image_' . $node->type, ''), $data, $options)
   );
+
+  dpm($replacements);
 
   // if the shorten_urls module is installed & enabled, shorten the url being shared.
   if (module_exists('shorten')) {
@@ -86,7 +85,7 @@ function theme_social_share_link($variables) {
   }
 
   // Trim title so it will fit in a tweet.
-  if ($network['machine_name'] == 'twitter' && variable_get('social_share_twitter_truncate', 1)) {
+  if ($network['machine_name'] == 'twitter' && variable_get('social_share_twitter_truncate', 0)) {
     if ((strlen($replacements['%URL%']) + strlen($replacements['%TITLE%'])) > 140) {
       $length                  = 136 - strlen($replacements['%URL%']);
       $replacements['%TITLE%'] = substr($replacements['%TITLE%'], 0, $length) . '...';
