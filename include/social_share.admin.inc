@@ -10,15 +10,36 @@
  */
 function social_share_admin_settings() {
   $types = node_type_get_types();
+  $form['#attached'] = array(
+    'js' => array(
+      'social-share-admin' => drupal_get_path('module', 'social_share') . '/js/social_share.admin.js',
+    ),
+  );
+
   $form['node_types'] = array(
     '#prefix' => '<label>' . t('Node types') . '</label>',
     '#suffix' => '<br />',
   );
+  $available = social_share_available_networks();
   foreach ($types as $type) {
-    $node_types[$type->type] = $type->name;
+    $enabled_networks = variable_get('social_share_networks_'. $type->type, array());
+    if (!empty($enabled_networks)) {
+      foreach ($enabled_networks as &$network) {
+        foreach($available as $n) {
+          if ($n['machine_name'] == $network) {
+            $network = $n['human_name'];
+            continue;
+          }
+        }
+      }
+      $networks = '<span id="social-share-enabled-' . $type->type . '-networks">' . implode(', ', $enabled_networks) . ' ' . format_plural(count($enabled_networks), '(1 social network)', '(@count social networks)') . '</span>';
+    }
+    else {
+      $networks = '';
+    }
     $form['node_types']['social_share_enabled_'. $type->type] = array(
       '#type' => 'checkbox',
-      '#title' => $type->name . '<small> [' . l('edit', 'admin/structure/types/manage/' . $type->type) . ']</small>',
+      '#title' => $type->name . '<small> [' . l('edit', 'admin/structure/types/manage/' . $type->type) . '] '. $networks .'</small>',
       '#default_value' => variable_get('social_share_enabled_' . $type->type, 0),
     );
   }
