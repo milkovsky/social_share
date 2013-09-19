@@ -94,28 +94,6 @@ function social_share_admin_settings() {
     );
   }
 
-  $form['social_share_sites'] = array(
-    '#type'          => 'checkboxes',
-    '#title'         => t('Enabled share links'),
-    '#description'   => t('Choose which websites you would like to enable a share link for.'),
-    '#default_value' => variable_get('social_share_sites', array()),
-    '#options'       => array(
-      'delicious'    => t('Delicious'),
-      'digg'         => t('Digg'),
-      'facebook'     => t('Facebook'),
-      'googleplus'   => t('Google Plus'),
-      'hyves'        => t('Hyves'),
-      'linkedin'     => t('LinkedIn'),
-      'msnlive'      => t('MSN Live'),
-      'myspace'      => t('Myspace'),
-      'orkut'        => t('Orkut'),
-      'reddit'       => t('Reddit'),
-      'stumbleupon'  => t('StumbleUpon'),
-      'twitter'      => t('Twitter'),
-      'yahoo'        => t('Yahoo'),
-    ),
-  );
-
   $form['social_share_twitter_truncate'] = array(
     '#type'          => 'checkbox',
     '#title'         => t('Truncate titles when sharing to twitter'),
