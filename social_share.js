@@ -6,9 +6,9 @@ Drupal.behaviors.social_shareFieldsetSummaries = {
       if ($('input#edit-social-share-enabled').is(':checked')) {
         $('.social-share-settings-wrapper').show();
 
-        var numNetworks = $('#edit-networks input[type=checkbox]').filter(':checked').length;
+        var numNetworks = $('#edit-social-share-networks input[type=checkbox]').filter(':checked').length;
         var networkNames = [];
-        $('#edit-networks input[type=checkbox]').filter(':checked').each(function() {
+        $('#edit-social-share-networks input[type=checkbox]').filter(':checked').each(function() {
           networkNames.push($(this).siblings('label').html().trim());
         });
 
