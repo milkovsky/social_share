@@ -294,8 +294,7 @@ function social_share_form_node_type_form_alter(&$form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Display share label'),
     '#description' => t('If checked, the share label !config_page_link will be displayed before any enabled social network share links when displaying nodes of this type.',
-      array('!config_page_link', l('as configured here', 'admin/config/content/social-share')),
-    ),
+      array('!config_page_link' => l('as configured here', 'admin/config/content/social-share'))),
     '#default_value' => variable_get('social_share_show_label_' . $form['#node_type']->type, '0'),
   );
 
