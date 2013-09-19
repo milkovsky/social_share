@@ -253,3 +253,106 @@ function social_share_field_extra_fields() {
 
   return $items;
 }
+
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the node type form.
+ */
+function social_share_form_node_type_form_alter(&$form, &$form_state) {
+//  $default_value = auto_nodetitle_get_setting($form['#node_type']->type);
+  $form['social_share'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Social Share'),
+    '#weight' => 8,
+    '#collapsible' => TRUE,
+//    '#collapsed' => !$default_value,
+    '#group' => 'additional_settings',
+    '#attached' => array(
+      'js' => array(
+        'auto-nodetitle' => drupal_get_path('module', 'social_share') . '/social_share.js',
+      ),
+    ),
+  );
+  $form['social_share']['social_share_enabled'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enable Social Share'),
+    '#description' => t('When checked, <em>Social Share</em> will be active for this node type (with settings as specified below)'),
+  );
+
+  $form['social_share']['wrapper'] = array(
+    '#prefix' => '<div class="social-share-settings-wrapper">',
+    '#suffix' => '</div>',
+    '#tree'   => FALSE,
+  );
+
+  $form['social_share']['wrapper']['replacements'] = array(
+    '#type'        => 'fieldset',
+    '#title'       => t('Replacements'),
+    '#description' => t('Specify the values to use for placeholders in the social share provider urls'),
+    '#collapsible' => TRUE,
+    '#collapsed'   => TRUE,
+    '#tree'        => TRUE,
+  );
+
+  $form['social_share']['wrapper']['replacements']['title'] = array(
+    '#type'          => 'textfield',
+    '#title'         => t('Title'),
+    '#description'   => t('Select the value to use for the title when sharing nodes of this type.'),
+    '#default_value' => '[node:title]',
+    '#required'      => TRUE,
+  );
+
+  $form['social_share']['wrapper']['replacements']['url'] = array(
+    '#type'          => 'textfield',
+    '#title'         => t('URL'),
+    '#description'   => t('Select the value to use for the URL when sharing nodes of this type.'),
+    '#default_value' => '[node:url:absolute]',
+    '#required'      => TRUE,
+  );
+
+  $form['social_share']['wrapper']['replacements']['description'] = array(
+    '#type'          => 'textfield',
+    '#title'         => t('Description'),
+    '#description'   => t('Select the value to use for the description when sharing nodes of this type. <br><strong>Note:</strong> Most social networks ignore this value.'),
+    '#default_value' => '[node:body]',
+  );
+
+  $form['social_share']['wrapper']['replacements']['image'] = array(
+    '#type'          => 'textfield',
+    '#title'         => t('Image'),
+    '#description'   => t('Select the value to use for the image when sharing nodes of this type. <br><strong>Note:</strong> Very few social networks accept this value, most automatically grab images from the page markup. Facebook, for example, uses og:image metatag values for image options.'),
+  );
+
+  $form['social_share']['wrapper']['replacements']['token_help'] = array(
+    '#theme' => 'token_tree',
+    '#token_types' => array('node'),
+  );
+
+  $form['social_share']['wrapper']['networks'] = array(
+    '#type'        => 'fieldset',
+    '#title'       => t('Social Networks'),
+    '#description' => t('Specify the social network(s) to enable for this node type.'),
+    '#collapsible' => TRUE,
+    '#collapsed'   => TRUE,
+    '#tree'        => TRUE,
+  );
+
+  $available_networks = social_share_available_networks();
+  foreach ($available_networks as $network) {
+    $form['social_share']['wrapper']['networks'][$network['machine_name']] = array(
+      '#type'  => 'checkbox',
+      '#title' => $network['human_name'],
+    );
+  }
+
+}
+
+function social_share_available_networks() {
+  return array(
+    array('machine_name' => 'facebook', 'human_name' => 'Facebook'),
+    array('machine_name' => 'twitter', 'human_name' => 'Twitter'),
+    array('machine_name' => 'google_plus', 'human_name' => 'Google Plus'),
+    array('machine_name' => 'youtube', 'human_name' => 'Youtube'),
+    array('machine_name' => 'myspace', 'human_name' => 'Myspace'),
+  );
+}
