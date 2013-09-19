@@ -76,129 +76,6 @@ function social_share_node_view($node, $view_mode, $language) {
 }
 
 
-function _social_share_link($site, $node) {
-  // define the share links
-  $sites['facebook'] = array(
-    'name' => 'Facebook',
-    'url'  => 'http://facebook.com/sharer.php?u=%URL%&t=%TITLE%'
-  );
-  $sites['twitter'] = array(
-    'name' => 'Twitter',
-    'url'  => 'http://twitter.com/intent/tweet?url=%URL%&text=%TITLE%'
-  );
-  $sites['googleplus'] = array(
-    'name' => 'Google Plus',
-    'url'  => 'https://plus.google.com/share?url=%URL%'
-  );
-  $sites['myspace'] = array(
-    'name' => 'Myspace',
-    'url' => 'http://www.myspace.com/Modules/PostTo/Pages/default.aspx?u=%URL%&c=%TITLE%'
-  );
-  $sites['msnlive'] = array(
-    'name' => 'MSN Live',
-    'url'  => 'http://profile.live.com/badge/?url=%URL%&title=%TITLE%&description=%DESC%'
-  );
-  $sites['yahoo'] = array(
-    'name' => 'Yahoo',
-    'url'  => 'http://bookmarks.yahoo.com/toolbar/savebm?opener=tb&u=%URL%&t=%TITLE%&d=%DESC%'
-  );
-  $sites['linkedin'] = array(
-    'name' => 'LinkedIn',
-    'url' => 'http://www.linkedin.com/shareArticle?url=%URL%&mini=true&title=%TITLE%&ro=false&summary=%DESC%&source='
-  );
-  $sites['orkut'] = array(
-    'name' => 'Orkut',
-    'url'  => 'http://promote.orkut.com/preview?nt=orkut.com&tt=%TITLE%&du=%URL%&cn=%DESC%'
-  );
-  $sites['digg'] = array(
-    'name' => 'Digg',
-    'url'  => 'http://digg.com/share?url=%URL%&title=%TITLE%'
-  );
-  $sites['delicious'] = array(
-    'name' => 'Delicious',
-    'url'  => 'http://www.delicious.com/save?v=5&noui&jump=close&url=%URL%&title=%TITLE%'
-  );
-  $sites['reddit'] = array(
-    'name' => 'Reddit',
-    'url'  => 'http://reddit.com/submit?url=%URL%&title=%TITLE%'
-  );
-  $sites['stumbleupon'] = array(
-    'name' => 'StumbleUpon',
-    'url'  => 'http://stumbleupon.com/submit?url=%URL%&title=%TITLE%'
-  );
-  $sites['hyves'] = array(
-    'name' => 'Hyves',
-    'url'  => 'http://www.hyves-share.nl/button/tip/?tipcategoryid=12&rating=5&title=%TITLE%&body=%DESC%Bron: [url=%URL%]%URL%[/url]'
-  );
-
-  // get the URL for the node, using path aliases if available
-  $url = url('node/' . $node->nid, array('absolute' => true));
-
-  // if the shorten_urls module is installed & enabled, shorten the url being shared.
-  if (module_exists('shorten')) {
-    $url = shorten_url($url);
-  }
-
-  // switch out placeholders with node information
-  $maxDescLength = variable_get('social_share_max_desc_length', 50);
-  $target = variable_get('social_share_target', 0);
-
-  $placeholders = array(
-    '%TITLE%',
-    '%URL%',
-    '%DESC%'
-  );
-
-  if (isset($node->nid)) {
-    $body = field_get_items('node', $node, 'body');
-    if (!empty($body) && $body[0]['format'] == 'php_code') {
-      $body = $body[0]['value'];
-    }
-    else {
-      $body = (!empty($body) && isset($body[0]['safe_value'])) ? $body[0]['safe_value'] : '';
-    }
-  }
-  else {
-    $body = '';
-  }
-
-  // Trim title so it will fit in a tweet.
-  if ($site == 'twitter' && variable_get('social_share_twitter_truncate', 0)) {
-    if ((strlen($url) + strlen($node->title)) > 140) {
-      $length = 136 - strlen($url);
-      $title  = substr($node->title, 0, $length);
-      $title .= '...';
-    }
-  }
-
-  if (!isset($title) || $title == '') {
-    $title = $node->title;
-  }
-
-  $replacements = array(
-    urlencode($title),
-    $url,
-    urlencode(strip_tags(strlen($body) > $maxDescLength ? substr($body, 0, $maxDescLength) .'...' : $body))
-  );
-
-  $options = array('attributes' => array('class' => 'social-share-'. $site));
-  if (variable_get('social_share_new_window', 0)) {
-    $options['attributes']['target'] = '_blank';
-    $options['attributes']['title'] = $sites[$site]['name'];
-  }
-
-  $link = array(
-    '#type'    => 'link',
-    '#title'   => $sites[$site]['name'],
-    '#href'    => str_replace($placeholders, $replacements, $sites[$site]['url']),
-    '#options' => $options,
-    '#suffix'  => '&nbsp;',
-  );
-
-  // Return the link
-  return $link;
-}
-
 /**
  * Implements hook_block_info().
  */
@@ -388,9 +265,71 @@ function social_share_form_node_type_form_alter(&$form, &$form_state) {
 
 function social_share_available_networks() {
   return array(
-    array('machine_name' => 'facebook', 'human_name' => 'Facebook'),
-    array('machine_name' => 'twitter', 'human_name' => 'Twitter'),
-    array('machine_name' => 'google_plus', 'human_name' => 'Google +'),
+    array(
+      'machine_name' => 'facebook',
+      'human_name'   => t('Facebook'),
+      'url'          => 'http://facebook.com/sharer.php?u=%URL%&t=%TITLE%',
+    ),
+    array(
+      'machine_name' => 'twitter',
+      'human_name'   => t('Twitter'),
+      'url'          => 'http://twitter.com/intent/tweet?url=%URL%&text=%TITLE%',
+    ),
+    array(
+      'machine_name' => 'googleplus',
+      'human_name'   => t('Google Plus'),
+      'url'          => 'https://plus.google.com/share?url=%URL%',
+    ),
+    array(
+      'machine_name' => 'myspace',
+      'human_name'   => t('Myspace'),
+      'url'          => 'http://www.myspace.com/Modules/PostTo/Pages/default.aspx?u=%URL%&c=%TITLE%',
+    ),
+    array(
+      'machine_name' => 'msnlive',
+      'human_name'   => t('MSN Live'),
+      'url'          => 'http://profile.live.com/badge/?url=%URL%&title=%TITLE%&description=%DESC%',
+    ),
+    array(
+      'machine_name' => 'yahoo',
+      'human_name'   => t('Yahoo'),
+      'url'          => 'http://bookmarks.yahoo.com/toolbar/savebm?opener=tb&u=%URL%&t=%TITLE%&d=%DESC%',
+    ),
+    array(
+      'machine_name' => 'linkedin',
+      'human_name'   => t('LinkedIn'),
+      'url'          => 'http://www.linkedin.com/shareArticle?url=%URL%&mini=true&title=%TITLE%&ro=false&summary=%DESC%&source=',
+    ),
+    array(
+      'machine_name' => 'orkut',
+      'human_name'   => t('Orkut'),
+      'url'          => 'http://promote.orkut.com/preview?nt=orkut.com&tt=%TITLE%&du=%URL%&cn=%DESC%',
+    ),
+    array(
+      'machine_name' => 'digg',
+      'human_name'   => t('Digg'),
+      'url'          => 'http://digg.com/share?url=%URL%&title=%TITLE%',
+    ),
+    array(
+      'machine_name' => 'delicious',
+      'human_name'   => t('Delicious'),
+      'url'          => 'http://www.delicious.com/save?v=5&noui&jump=close&url=%URL%&title=%TITLE%',
+    ),
+    array(
+      'machine_name' => 'reddit',
+      'human_name'   => t('Reddit'),
+      'url'          => 'http://reddit.com/submit?url=%URL%&title=%TITLE%',
+    ),
+    array(
+      'machine_name' => 'stumbleupon',
+      'human_name'   => t('StumbleUpon'),
+      'url'          => 'http://stumbleupon.com/submit?url=%URL%&title=%TITLE%',
+    ),
+    array(
+      'machine_name' => 'hyves',
+      'human_name'   => t('Hyves'),
+      'url'          => 'http://www.hyves-share.nl/button/tip/?tipcategoryid=12&rating=5&title=%TITLE%&body=%DESC%Bron: [url=%URL%]%URL%[/url]',
+    ),
   );
 }
 
