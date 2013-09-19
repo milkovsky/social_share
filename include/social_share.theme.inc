@@ -66,9 +66,9 @@ function theme_social_share_link($variables) {
 
   $replacements = array(
     '%TITLE%' => token_replace(variable_get('social_share_title_' . $node->type, '[node:title]'), $data, $options),
-    '%DESC%'  => token_replace(variable_get('social_share_description_' . $node->type, '[node:body]'), $data, $options),
+    '%DESC%'  => strip_tags(token_replace(variable_get('social_share_description_' . $node->type, '[node:body]'), $data, $options)),
     '%URL%'   => token_replace(variable_get('social_share_url_' . $node->type, '[node:url:absolute]'), $data, $options),
-    '%IMAGE%' => token_replace(variable_get('social_share_image_' . $node->type, ''), $data, $options)
+    '%IMAGE%' => token_replace(variable_get('social_share_image_' . $node->type, ''), $data, $options),
   );
 
   // if the shorten_urls module is installed & enabled, shorten the url being shared.
@@ -88,6 +88,11 @@ function theme_social_share_link($variables) {
       $length                  = 136 - strlen($replacements['%URL%']);
       $replacements['%TITLE%'] = substr($replacements['%TITLE%'], 0, $length) . '...';
     }
+  }
+
+  // urlencode replacement items:
+  foreach($replacements as $k => $v) {
+    $replacements[$k] = rawurlencode($v);
   }
 
   $link_options = array('attributes' => array('class' => 'social-share-'. str_replace('_', '-', $network['machine_name']), 'title' => $network['human_name']));
