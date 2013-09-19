@@ -278,6 +278,27 @@ function social_share_form_node_type_form_alter(&$form, &$form_state) {
     '#tree'   => FALSE,
   );
 
+  $form['social_share']['wrapper']['social_share_theme'] = array(
+    '#type'          => 'select',
+    '#title'         => t('Display Format'),
+    '#description'   => t('Select the display format for social share links.<br /><strong>NOTE:</strong> If you want to provide your own icons, or prefer text links, select none and add css as needed to your theme.'),
+    '#default_value' => variable_get('social_share_theme_' . $form['#node_type']->type, 'social_share_links'),
+    '#options'       => array(
+      'social_share_links'       => t('Unstyled Links'),
+      'social_share_small_icons' => t('Small Icons (16px)'),
+      'social_share_large_icons' => t('Large Icons (32px)'),
+    ),
+  );
+
+  $form['social_share']['wrapper']['social_share_show_label'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Display share label'),
+    '#description' => t('If checked, the share label !config_page_link will be displayed before any enabled social network share links when displaying nodes of this type.',
+      array('!config_page_link', l('as configured here', 'admin/config/content/social-share')),
+    ),
+    '#default_value' => variable_get('social_share_show_label_' . $form['#node_type']->type, '0'),
+  );
+
   $replacements = variable_get('social_share_replacements_' . $form['#node_type']->type, array(
     '[node:title]',
     '[node:url:absolute]',
@@ -370,6 +391,8 @@ function social_share_node_type_update($info) {
       'social_share_description',
       'social_share_image',
       'social_share_networks',
+      'social_share_show_label',
+      'social_share_theme',
     );
 
     foreach ($settings as $setting) {
@@ -392,6 +415,8 @@ function social_share_node_type_delete($info) {
     'social_share_description',
     'social_share_image',
     'social_share_networks',
+    'social_share_show_label',
+    'social_share_theme',
   );
 
   foreach ($settings as $setting) {
