@@ -79,8 +79,19 @@ function theme_social_share_link($variables) {
     $replacements['%URL%'] = shorten_url($replacements['%URL%']);
   }
 
-  $maxDescLength = variable_get('social_share_max_desc_length', 50);
-  $target = variable_get('social_share_target', 0);
+  // Trim description as necessary
+  $max_desc_length = variable_get('social_share_max_desc_length', 50);
+  if (strlen($replacements['%DESC%']) > $max_desc_length) {
+    $replacements['%DESC%'] = substr($replacements['%DESC%'], 0, $max_desc_length) . '...';
+  }
+
+  // Trim title so it will fit in a tweet.
+  if ($network['machine_name'] == 'twitter' && variable_get('social_share_twitter_truncate', 1)) {
+    if ((strlen($replacements['%URL%']) + strlen($replacements['%TITLE%'])) > 140) {
+      $length                  = 136 - strlen($replacements['%URL%']);
+      $replacements['%TITLE%'] = substr($replacements['%TITLE%'], 0, $length) . '...';
+    }
+  }
 
   $link_options = array('attributes' => array('class' => 'social-share-'. str_replace('_', '-', $network['machine_name']), 'title' => $network['human_name']));
   if (variable_get('social_share_new_window', 0)) {
