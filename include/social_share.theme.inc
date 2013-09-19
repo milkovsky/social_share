@@ -71,8 +71,6 @@ function theme_social_share_link($variables) {
     '%IMAGE%' => token_replace(variable_get('social_share_image_' . $node->type, ''), $data, $options)
   );
 
-  dpm($replacements);
-
   // if the shorten_urls module is installed & enabled, shorten the url being shared.
   if (module_exists('shorten')) {
     $replacements['%URL%'] = shorten_url($replacements['%URL%']);
