@@ -261,7 +261,7 @@ function social_share_form_node_type_form_alter(&$form, &$form_state) {
     '#group' => 'additional_settings',
     '#attached' => array(
       'js' => array(
-        'auto-nodetitle' => drupal_get_path('module', 'social_share') . '/js/social_share.js',
+        'social-share' => drupal_get_path('module', 'social_share') . '/js/social_share.js',
       ),
     ),
   );
