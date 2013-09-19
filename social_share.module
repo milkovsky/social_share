@@ -49,6 +49,12 @@ function social_share_node_view($node, $view_mode, $language) {
       // put the shareBox into the node before it's rendered
       $node->content['social_share']['#prefix'] = '<div class="social-share clearfix"><span>'. $share_label .'</span>';
       $node->content['social_share']['#suffix'] = '</div>';
+      $icon_setting = variable_get('social_share_icons', 'none');
+      if ($icon_setting != 'none') {
+        if ($icon_setting == '16' || $icon_setting == '32') {
+          drupal_add_css(drupal_get_path('module', 'social_share') .'/icons/social-share-icons-'. $icon_setting .'.css');
+        }
+      }
     }
   }
 }
@@ -56,24 +62,16 @@ function social_share_node_view($node, $view_mode, $language) {
 function _social_share_link($site, $node) {
   // define the share links
   $sites['facebook'] = array(
-    'name' => 'Facebook', 
+    'name' => 'Facebook',
     'url'  => 'http://facebook.com/sharer.php?u=%URL%&t=%TITLE%'
   );
-  if (variable_get('social_share_twitter_method', 'original') == 'original') {
-    $sites['twitter'] = array(
-      'name' => 'Twitter', 
-      'url'  => 'http://twitter.com/status?=%TITLE%+%URL%'
-    );
-  }
-  else {
-    $sites['twitter'] = array(
-      'name' => 'Twitter',
-      'url'  => 'http://twitter.com/intent/tweet?url=%URL%&text=%TITLE%'
-    );
-  }
-  $sites['googlebuzz'] = array(
-    'name' => 'Google Buzz', 
-    'url'  => 'http://www.google.com/buzz/post?url=%URL%&message=%TITLE%'
+  $sites['twitter'] = array(
+    'name' => 'Twitter',
+    'url'  => 'http://twitter.com/intent/tweet?url=%URL%&text=%TITLE%'
+  );
+  $sites['googleplus'] = array(
+    'name' => 'Google Plus',
+    'url'  => 'https://plus.google.com/share?url=%URL%'
   );
   $sites['myspace'] = array(
     'name' => 'Myspace',
@@ -110,10 +108,6 @@ function _social_share_link($site, $node) {
   $sites['stumbleupon'] = array(
     'name' => 'StumbleUpon',
     'url'  => 'http://stumbleupon.com/submit?url=%URL%&title=%TITLE%'
-  );
-  $sites['furl'] = array(
-    'name' => 'Furl',
-    'url'  => 'http://furl.net/storeIt.jsp?t=%TITLE%&u=%URL%'
   );
   $sites['hyves'] = array(
     'name' => 'Hyves',
@@ -253,7 +247,6 @@ function social_share_field_extra_fields() {
 
   return $items;
 }
-
 
 /**
  * Implements hook_form_FORM_ID_alter() for the node type form.

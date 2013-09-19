@@ -85,38 +85,27 @@ function social_share_admin_settings() {
     '#description'   => t('Choose which websites you would like to enable a share link for.'),
     '#default_value' => variable_get('social_share_sites', array()),
     '#options'       => array(
-      'facebook'     => t('Facebook'),
-      'twitter'      => t('Twitter'),
-      'googlebuzz'   => t('Google Buzz'),
-      'myspace'      => t('Myspace'),
-      'msnlive'      => t('MSN Live'),
-      'yahoo'        => t('Yahoo'),
-      'linkedin'     => t('LinkedIn'),
-      'orkut'        => t('Orkut'),
-      'digg'         => t('Digg'),
       'delicious'    => t('Delicious'),
+      'digg'         => t('Digg'),
+      'facebook'     => t('Facebook'),
+      'googleplus'   => t('Google Plus'),
+      'hyves'        => t('Hyves'),
+      'linkedin'     => t('LinkedIn'),
+      'msnlive'      => t('MSN Live'),
+      'myspace'      => t('Myspace'),
+      'orkut'        => t('Orkut'),
       'reddit'       => t('Reddit'),
       'stumbleupon'  => t('StumbleUpon'),
-      'furl'         => t('Furl'),
-      'hyves'        => t('Hyves'),
+      'twitter'      => t('Twitter'),
+      'yahoo'        => t('Yahoo'),
     ),
-  );
-
-  $form['social_share_twitter_method'] = array(
-    '#type'          => 'radios',
-    '#default_value' => variable_get('social_share_twitter_method', 'original'),
-    '#options'       => array(
-      'original'     => t('Old style, setting status only.'),
-      'new'          => t('New style, uses twitters URL sharing feature.'),
-    ),
-    '#title'         => t('Twitter share method'),
   );
 
   $form['social_share_twitter_truncate'] = array(
     '#type'          => 'checkbox',
     '#title'         => t('Truncate titles when sharing to twitter'),
     '#description'   => t('If enabled, node titles will be truncated if the URL being shared and the title exceed the twitter character limit of 140
-       characters. <strong>NOTE:</strong> Enabling this may cause issues with unicode text (Arabic, Kanji, etc)'),
+       characters. <br /><strong>NOTE:</strong> Enabling this may cause issues with unicode text (Arabic, Kanji, etc)'),
     '#default_value' => variable_get('social_share_twitter_truncate', 0),
   );
 
@@ -128,5 +117,18 @@ function social_share_admin_settings() {
     '#title'         => t('Maximum description length'),
     '#default_value' => variable_get('social_share_max_desc_length', 50),
   );
+
+  $form['social_share_icons'] = array(
+    '#type'          => 'select',
+    '#title'         => t('Icons'),
+    '#description'   => t('Select an icon pack to use (small 16px / large 32px) or None <em>(default)</em><br /><strong>NOTE:</strong> If you want to provide your own icons, or prefer text links, select none and add css as needed to your theme.'),
+    '#default_value' => variable_get('social_share_icons', 'none'),
+    '#options'       => array(
+      'none'         => t('None'),
+      '16'           => t('Small 16px'),
+      '32'           => t('Large 32px'),
+    ),
+  );
+
   return system_settings_form($form);
 }
