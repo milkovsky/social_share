@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * @file social_share.install
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function social_share_uninstall() {
+  // Remove all social share configuration from the database.
+  db_delete('variable')
+    ->condition('name', 'social_share_%', 'LIKE')
+    ->execute();
+}
