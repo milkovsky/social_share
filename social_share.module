@@ -24,6 +24,49 @@ function social_share_menu() {
 }
 
 /**
+ * Implements hook_theme().
+ */
+function social_share_theme() {
+  return array(
+    'social_share_links' => array( // Wrapper to contain individual social share links
+      'file'      => 'social_share.theme.inc',
+      'path'      => drupal_get_path('module', 'social_share') .'/include',
+      'variables' => array(
+        'nid'  => NULL,
+        'node' => NULL,
+      ),
+    ),
+
+    'social_share_link' => array( // Render a single share link (unstyled)
+      'file'      => 'social_share.theme.inc',
+      'path'      => drupal_get_path('module', 'social_share') .'/include',
+      'variables' => array(
+        'network' => NULL,
+        'type'    => NULL,
+      ),
+    ),
+
+    'social_share_small_icon' => array( // Render a single share link (small icon)
+      'file'      => 'social_share.theme.inc',
+      'path'      => drupal_get_path('module', 'social_share') .'/include',
+      'variables' => array(
+        'network' => NULL,
+        'type'    => NULL,
+      ),
+    ),
+
+    'social_share_large_icon' => array( // Render a single share link (larger icon)
+      'file'      => 'social_share.theme.inc',
+      'path'      => drupal_get_path('module', 'social_share') .'/include',
+      'variables' => array(
+        'network' => NULL,
+        'type'    => NULL,
+      ),
+    ),
+  );
+}
+
+/**
  * Implements hook_node_view().
  */
 function social_share_node_view($node, $view_mode, $language) {
@@ -282,11 +325,11 @@ function social_share_form_node_type_form_alter(&$form, &$form_state) {
     '#type'          => 'select',
     '#title'         => t('Display Format'),
     '#description'   => t('Select the display format for social share links.<br /><strong>NOTE:</strong> If you want to provide your own icons, or prefer text links, select none and add css as needed to your theme.'),
-    '#default_value' => variable_get('social_share_theme_' . $form['#node_type']->type, 'social_share_links'),
+    '#default_value' => variable_get('social_share_theme_' . $form['#node_type']->type, 'social_share_link'),
     '#options'       => array(
-      'social_share_links'       => t('Unstyled Links'),
-      'social_share_small_icons' => t('Small Icons (16px)'),
-      'social_share_large_icons' => t('Large Icons (32px)'),
+      'social_share_link'       => t('Unstyled Links'),
+      'social_share_small_icon' => t('Small Icons (16px)'),
+      'social_share_large_icon' => t('Large Icons (32px)'),
     ),
   );
 
