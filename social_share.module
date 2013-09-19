@@ -259,13 +259,11 @@ function social_share_field_extra_fields() {
  * Implements hook_form_FORM_ID_alter() for the node type form.
  */
 function social_share_form_node_type_form_alter(&$form, &$form_state) {
-//  $default_value = auto_nodetitle_get_setting($form['#node_type']->type);
   $form['social_share'] = array(
     '#type' => 'fieldset',
     '#title' => t('Social Share'),
     '#weight' => 8,
     '#collapsible' => TRUE,
-//    '#collapsed' => !$default_value,
     '#group' => 'additional_settings',
     '#attached' => array(
       'js' => array(
@@ -277,6 +275,7 @@ function social_share_form_node_type_form_alter(&$form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Enable Social Share'),
     '#description' => t('When checked, <em>Social Share</em> will be active for this node type (with settings as specified below)'),
+    '#default_value' => variable_get('social_share_enabled_' . $form['#node_type']->type, 0),
   );
 
   $form['social_share']['wrapper'] = array(
@@ -285,50 +284,60 @@ function social_share_form_node_type_form_alter(&$form, &$form_state) {
     '#tree'   => FALSE,
   );
 
-  $form['social_share']['wrapper']['replacements'] = array(
+  $replacements = variable_get('social_share_replacements_' . $form['#node_type']->type, array(
+    '[node:title]',
+    '[node:url:absolute]',
+    '[node:body]',
+    '',
+  ));
+
+  $form['social_share']['wrapper']['social_share_replacements'] = array(
     '#type'        => 'fieldset',
     '#title'       => t('Replacements'),
     '#description' => t('Specify the values to use for placeholders in the social share provider urls'),
     '#collapsible' => TRUE,
     '#collapsed'   => TRUE,
-    '#tree'        => TRUE,
+    '#tree'        => FALSE,
   );
 
-  $form['social_share']['wrapper']['replacements']['title'] = array(
+  $form['social_share']['wrapper']['social_share_replacements']['social_share_title'] = array(
     '#type'          => 'textfield',
     '#title'         => t('Title'),
     '#description'   => t('Select the value to use for the title when sharing nodes of this type.'),
-    '#default_value' => '[node:title]',
+    '#default_value' => variable_get('social_share_title_' . $form['#node_type']->type, '[node:title]'),
     '#required'      => TRUE,
   );
 
-  $form['social_share']['wrapper']['replacements']['url'] = array(
+  $form['social_share']['wrapper']['social_share_replacements']['social_share_url'] = array(
     '#type'          => 'textfield',
     '#title'         => t('URL'),
     '#description'   => t('Select the value to use for the URL when sharing nodes of this type.'),
-    '#default_value' => '[node:url:absolute]',
+    '#default_value' => variable_get('social_share_url_' . $form['#node_type']->type, '[node:url:absolute]'),
     '#required'      => TRUE,
   );
 
-  $form['social_share']['wrapper']['replacements']['description'] = array(
+  $form['social_share']['wrapper']['social_share_replacements']['social_share_description'] = array(
     '#type'          => 'textfield',
     '#title'         => t('Description'),
     '#description'   => t('Select the value to use for the description when sharing nodes of this type. <br><strong>Note:</strong> Most social networks ignore this value.'),
-    '#default_value' => '[node:body]',
+    '#default_value' => variable_get('social_share_description_' . $form['#node_type']->type, '[node:body]'),
   );
 
-  $form['social_share']['wrapper']['replacements']['image'] = array(
+  $form['social_share']['wrapper']['social_share_replacements']['social_share_image'] = array(
     '#type'          => 'textfield',
     '#title'         => t('Image'),
     '#description'   => t('Select the value to use for the image when sharing nodes of this type. <br><strong>Note:</strong> Very few social networks accept this value, most automatically grab images from the page markup. Facebook, for example, uses og:image metatag values for image options.'),
+    '#default_value' => variable_get('social_share_image_' . $form['#node_type']->type, ''),
   );
 
-  $form['social_share']['wrapper']['replacements']['token_help'] = array(
+  $form['social_share']['wrapper']['social_share_replacements']['token_help'] = array(
     '#theme' => 'token_tree',
     '#token_types' => array('node'),
   );
 
-  $form['social_share']['wrapper']['networks'] = array(
+  $networks = variable_get('social_share_networks_' . $form['#node_type']->type, array());
+
+  $form['social_share']['wrapper']['social_share_networks'] = array(
     '#type'        => 'fieldset',
     '#title'       => t('Social Networks'),
     '#description' => t('Specify the social network(s) to enable for this node type.'),
@@ -339,20 +348,59 @@ function social_share_form_node_type_form_alter(&$form, &$form_state) {
 
   $available_networks = social_share_available_networks();
   foreach ($available_networks as $network) {
-    $form['social_share']['wrapper']['networks'][$network['machine_name']] = array(
+    $form['social_share']['wrapper']['social_share_networks'][$network['machine_name']] = array(
       '#type'  => 'checkbox',
       '#title' => $network['human_name'],
+      '#default_value' => (in_array($network['machine_name'], $networks)) ? 1 : 0,
     );
   }
-
 }
 
 function social_share_available_networks() {
   return array(
     array('machine_name' => 'facebook', 'human_name' => 'Facebook'),
     array('machine_name' => 'twitter', 'human_name' => 'Twitter'),
-    array('machine_name' => 'google_plus', 'human_name' => 'Google Plus'),
-    array('machine_name' => 'youtube', 'human_name' => 'Youtube'),
-    array('machine_name' => 'myspace', 'human_name' => 'Myspace'),
+    array('machine_name' => 'google_plus', 'human_name' => 'Google +'),
   );
+}
+
+/**
+ * Implements hook_node_type_update().
+ */
+function social_share_node_type_update($info) {
+  if (!empty($info->old_type) && $info->type != $info->old_type) {
+    $settings = array(
+      'social_share_enabled',
+      'social_share_title',
+      'social_share_url',
+      'social_share_description',
+      'social_share_image',
+      'social_share_networks',
+    );
+
+    foreach ($settings as $setting) {
+      if ($var = variable_get($setting .'_'. $info->old_type, NULL)) {
+        variable_set($setting .'_'. $info->type, $var);
+      }
+      variable_del($setting .'_'. $info->old_type);
+    }
+  }
+}
+
+/**
+ * Implements hook_node_type_delete().
+ */
+function social_share_node_type_delete($info) {
+  $settings = array(
+    'social_share_enabled',
+    'social_share_title',
+    'social_share_url',
+    'social_share_description',
+    'social_share_image',
+    'social_share_networks',
+  );
+
+  foreach ($settings as $setting) {
+    variable_del($setting .'_'. $info->type);
+  }
 }
