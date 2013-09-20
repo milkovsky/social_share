@@ -12,12 +12,6 @@ function social_share_schema() {
 
   $schema['social_share_networks'] = array(
     'fields' => array(
-      'network_id' => array(
-        'type'     => 'serial',
-        'length'   => 5,
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-      ),
       'machine_name' => array(
         'type'     => 'varchar',
         'length'   => 255,
@@ -44,10 +38,7 @@ function social_share_schema() {
         'default'  => 0,
       ),
     ),
-    'unique keys' => array(
-      'machine_name' => array('machine_name'),
-    ),
-    'primary key' => array('network_id'),
+    'primary key' => array('machine_name'),
   );
 
   return $schema;

@@ -13,7 +13,7 @@ function social_share_admin_networks($form, &$form_state) {
   $form['networks']['#tree'] = TRUE;
 
   foreach ($networks as $network) {
-    $form['networks'][$network['network_id']] = array(
+    $form['networks'][$network['machine_name']] = array(
       'human_name' => array(
         '#markup' => $network['human_name'],
       ),
@@ -21,17 +21,17 @@ function social_share_admin_networks($form, &$form_state) {
         '#markup' => $network['url'],
       ),
       'edit' => array(
-        '#markup' => l('Edit', 'admin/config/content/social-share/networks/' . $network['network_id'] .'/edit'),
+        '#markup' => l('Edit', 'admin/config/content/social-share/networks/' . $network['machine_name'] .'/edit'),
       ),
     );
 
     if (!$network['locked']) {
-      $form['networks'][$network['network_id']]['remove'] = array(
-        '#markup' => l('Remove', 'admin/config/content/social-share/networks/' . $network['network_id'] .'/remove'),
+      $form['networks'][$network['machine_name']]['remove'] = array(
+        '#markup' => l('Remove', 'admin/config/content/social-share/networks/' . $network['machine_name'] .'/remove'),
       );
     }
 
-    $form['networks'][$network['network_id']]['weight'] = array(
+    $form['networks'][$network['machine_name']]['weight'] = array(
       '#type'          => 'weight',
       '#title'         => t('Weight'),
       '#default_value' => $network['weight'],
@@ -69,9 +69,9 @@ function social_share_admin_networks($form, &$form_state) {
  */
 function social_share_admin_networks_submit($form, &$form_state) {
   $values = $form_state['values']['networks'];
-  foreach($values as $network_id => $weight) {
+  foreach($values as $machine_name => $weight) {
     db_update('social_share_networks')
-      ->condition('network_id', $network_id, '=')
+      ->condition('machine_name', $machine_name, '=')
       ->fields($weight)
       ->execute();
   }
@@ -92,14 +92,21 @@ function social_share_check_machine_name($name) {
 /**
  * Form callback for social network add/edit form.
  */
-function social_share_admin_networks_network($form, &$form_state, $network_id = NULL) {
-  if ($network_id) {
-    $network = social_share_get_network_by_id($network_id);
-    $form['network_id'] = array(
+function social_share_admin_networks_network($form, &$form_state, $machine_name = NULL) {
+  if ($machine_name) {
+    $network = social_share_get_network($machine_name);
+    $form['new'] = array(
       '#type'  => 'hidden',
-      '#value' => $network_id,
+      '#value' => FALSE,
     );
   }
+  else {
+    $form['new'] = array(
+      '#type'  => 'hidden',
+      '#value' => TRUE,
+    );
+  }
+
   $form += array(
     'human_name' => array(
       '#type'          => 'textfield',
@@ -158,9 +165,9 @@ function social_share_admin_networks_network($form, &$form_state, $network_id = 
 function social_share_admin_networks_network_submit($form, &$form_state) {
   $values = $form_state['values'];
 
-  if (isset($values['network_id'])) {
+  if (!$values['new']) {
     db_update('social_share_networks')
-      ->condition('network_id', $values['network_id'], '=')
+      ->condition('machine_name', $values['machine_name'], '=')
       ->fields(array(
         'human_name' => $values['human_name'],
         'machine_name' => $values['machine_name'],
@@ -186,16 +193,16 @@ function social_share_admin_networks_network_submit($form, &$form_state) {
 /**
  * Form callback for confirmation of removal of a custom social network entry.
  */
-function social_share_admin_networks_remove($form, &$form_state, $network_id = NULL) {
+function social_share_admin_networks_remove($form, &$form_state, $machine_name = NULL) {
   $path = 'admin/config/content/social-share/networks';
-  if (!$network_id) {
+  if (!$machine_name) {
     drupal_goto($path);
   }
-  $network = social_share_get_network_by_id($network_id);
+  $network = social_share_get_network($machine_name);
 
-  $form['network_id'] = array(
+  $form['machine_name'] = array(
     '#type' => 'hidden',
-    '#value' => $network_id,
+    '#value' => $machine_name,
   );
   $form['human_name'] = array(
     '#type' => 'hidden',
@@ -213,7 +220,7 @@ function social_share_admin_networks_remove($form, &$form_state, $network_id = N
  */
 function social_share_admin_networks_remove_submit($form, &$form_state) {
   db_delete('social_share_networks')
-    ->condition('network_id', $form_state['values']['network_id'])
+    ->condition('machine_name', $form_state['values']['machine_name'])
     ->execute();
 
   drupal_set_message(t('"@name" has been removed.', array('@name' => $form_state['values']['human_name'])));

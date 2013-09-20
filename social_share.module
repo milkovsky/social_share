@@ -354,24 +354,6 @@ function social_share_get_network($network) {
 }
 
 /**
- * Fetch a single network from the database by id.
- * @param  String $network Social network machine name
- * @return Array           Social network configuration
- */
-function social_share_get_network_by_id($network_id) {
-  $available_networks = social_share_available_networks();
-
-  foreach($available_networks as $available_network) {
-    if ($available_network['network_id'] == $network_id) {
-      return $available_network;
-    }
-  }
-
-  return FALSE;
-}
-
-
-/**
  * Implements hook_node_type_update().
  */
 function social_share_node_type_update($info) {
