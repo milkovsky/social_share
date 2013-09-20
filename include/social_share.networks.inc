@@ -163,3 +163,34 @@ function social_share_admin_networks_network_submit($form, &$form_state) {
   }
   drupal_goto('admin/config/content/social-share/networks');
 }
+
+function social_share_admin_networks_remove($form, &$form_state, $network_id = NULL) {
+  $path = 'admin/config/content/social-share/networks';
+  if (!$network_id) {
+    drupal_goto($path);
+  }
+  $network = social_share_get_network_by_id($network_id);
+
+  $form['network_id'] = array(
+    '#type' => 'hidden',
+    '#value' => $network_id,
+  );
+  $form['human_name'] = array(
+    '#type' => 'hidden',
+    '#value' => $network['human_name'],
+  );
+  $form['#submit'] = array('social_share_admin_networks_remove_submit');
+
+  $question = t('Are you sure you want to remove "@name"', array('@name' => $network['human_name']));
+
+  return confirm_form($form, $question, $path, NULL, t('Remove'), NULL, 'confirm');
+}
+
+function social_share_admin_networks_remove_submit($form, &$form_state) {
+  db_delete('social_share_networks')
+    ->condition('network_id', $form_state['values']['network_id'])
+    ->execute();
+
+  drupal_set_message(t('"@name" has been removed.', array('@name' => $form_state['values']['human_name'])));
+  drupal_goto('admin/config/content/social-share/networks');
+}
