@@ -39,7 +39,7 @@ function social_share_admin_settings() {
     }
     $form['node_types']['social_share_enabled_'. $type->type] = array(
       '#type' => 'checkbox',
-      '#title' => $type->name . '<small> [' . l('edit', 'admin/structure/types/manage/' . $type->type) . '] '. $networks .'</small>',
+      '#title' => $type->name . '<small> [' . l('edit', 'admin/structure/types/manage/' . $type->type, array('query' => array('destination' => 'admin/config/content/social-share'))) . '] '. $networks .'</small>',
       '#default_value' => variable_get('social_share_enabled_' . $type->type, 0),
     );
   }
