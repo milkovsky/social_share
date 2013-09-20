@@ -14,30 +14,31 @@ function social_share_schema() {
     'fields' => array(
       'network_id' => array(
         'type'     => 'serial',
+        'length'   => 5,
         'unsigned' => TRUE,
         'not null' => TRUE,
       ),
       'machine_name' => array(
         'type'     => 'varchar',
-        'not null' => TRUE,
+        'length'   => 255,
       ),
       'human_name' => array(
         'type'     => 'varchar',
-        'not null' => TRUE,
+        'length'   => 255,
       ),
       'url' => array(
         'type'     => 'blob',
-        'not null' => TRUE,
       ),
       'weight' => array(
         'type'     => 'int',
+        'length'   => 4,
         'unsigned' => FALSE,
         'not null' => TRUE,
         'default'  => 0,
       ),
       'locked' => array(
         'type'     => 'int',
-        'size'     => 'tiny',
+        'length'   => 1,
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default'  => 0,
