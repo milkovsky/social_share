@@ -13,10 +13,10 @@ function theme_social_share_links($variables) {
     $block = FALSE;
   }
 
-  if (!isset($nid) && !(isset($node) && !$block)) {
+  if (!$nid && !$node && !$block) {
     return array();
   }
-  elseif (isset($nid) && !isset($node)) {
+  elseif ($nid && !$node && !$block) {
     $node = node_load($nid);
     if (!$node) {
       return array();
@@ -40,7 +40,6 @@ function theme_social_share_links($variables) {
         }
       }
     }
-
   }
   else {
     if (variable_get('social_share_enabled_' . $node->type, 0)) {
@@ -60,7 +59,7 @@ function theme_social_share_links($variables) {
   $content['#suffix'] = '</div>';
 
   if (($block && isset($settings['social_share_show_label']) && $settings['social_share_show_label']) ||
-      variable_get('social_share_show_label_' . $node->type, 0)) {
+      (isset($node) && variable_get('social_share_show_label_' . $node->type, 0))) {
     global $language;
     $label = variable_get('social_share_label', NULL);
     if (is_array($label)) {
