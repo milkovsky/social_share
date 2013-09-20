@@ -81,6 +81,12 @@ function social_share_theme() {
         'node'    => NULL,
       ),
     ),
+
+    'social_share_admin_networks' => array(
+      'render element' => 'form',
+      'file' => 'social_share.theme.inc',
+      'path' => drupal_get_path('module', 'social_share') .'/include',
+    ),
   );
 }
 
