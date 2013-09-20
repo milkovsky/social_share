@@ -20,6 +20,24 @@ function social_share_menu() {
     'file path'        => drupal_get_path('module', 'social_share') .'/include',
     'file'             => 'social_share.admin.inc',
   );
+  $items['admin/config/content/social-share/settings'] = array(
+    'title'            => 'Settings',
+    'page callback'    => 'drupal_get_form',
+    'page arguments'   => array('social_share_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+    'type'             => MENU_DEFAULT_LOCAL_TASK,
+    'file path'        => drupal_get_path('module', 'social_share') .'/include',
+    'file'             => 'social_share.admin.inc',
+  );
+  $items['admin/config/content/social-share/networks'] = array(
+    'title'            => 'Networks',
+    'page callback'    => 'drupal_get_form',
+    'page arguments'   => array('social_share_admin_networks'),
+    'access arguments' => array('administer site configuration'),
+    'type'             => MENU_LOCAL_TASK,
+    'file path'        => drupal_get_path('module', 'social_share') .'/include',
+    'file'             => 'social_share.networks.inc',
+  );
   return $items;
 }
 
