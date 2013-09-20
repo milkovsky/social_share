@@ -144,6 +144,123 @@ function social_share_block_info() {
 }
 
 /**
+ * Implements hook_block_configure().
+ */
+function social_share_block_configure($delta = '') {
+  $form = array();
+
+  if ($delta == 'social_share') {
+    $settings = variable_get('social_share_block_settings', array());
+    $form['social_share'] = array(
+      '#type'        => 'fieldset',
+      '#title'       => t('Social Share Settings'),
+      '#description' => t('Configure site-wide social share settings to use in this block.'),
+      '#weight'      => 8,
+      '#collapsible' => FALSE,
+    );
+
+    $form['social_share']['social_share_theme'] = array(
+      '#type'          => 'select',
+      '#title'         => t('Display Format'),
+      '#description'   => t('Select the display format for social share links.<br /><strong>NOTE:</strong> If you want to provide your own icons, or prefer text links, select none and add css as needed to your theme.'),
+      '#default_value' => isset($settings['social_share_theme']) ? $settings['social_share_theme'] : 'social_share_link_block',
+      '#options'       => array(
+        'social_share_link_block'       => t('Unstyled Links'),
+        'social_share_small_icon_block' => t('Small Icons (16px)'),
+        'social_share_large_icon_block' => t('Large Icons (32px)'),
+      ),
+    );
+
+    $form['social_share']['social_share_show_label'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Display share label'),
+      '#description' => t('If checked, the share label !config_page_link will be displayed before any enabled social network share links when displaying nodes of this type.',
+        array('!config_page_link' => l('as configured here', 'admin/config/content/social-share'))),
+      '#default_value' => isset($settings['social_share_show_label']) ? $settings['social_share_show_label'] : 0,
+    );
+
+    $form['social_share']['social_share_replacements'] = array(
+      '#type'        => 'fieldset',
+      '#title'       => t('Replacements'),
+      '#description' => t('Specify the values to use for placeholders in the social share provider urls'),
+      '#collapsible' => TRUE,
+      '#collapsed'   => TRUE,
+      '#tree'        => FALSE,
+    );
+
+    $form['social_share']['social_share_replacements']['social_share_title'] = array(
+      '#type'          => 'textfield',
+      '#title'         => t('Title'),
+      '#description'   => t('Select the value to use for the title when sharing from this block.'),
+      '#default_value' => isset($settings['social_share_title']) ? $settings['social_share_title'] : '[current-page:title]',
+      '#required'      => TRUE,
+    );
+
+    $form['social_share']['social_share_replacements']['social_share_url'] = array(
+      '#type'          => 'textfield',
+      '#title'         => t('URL'),
+      '#description'   => t('Select the value to use for the URL when sharing from this block.'),
+      '#default_value' => isset($settings['social_share_url']) ? $settings['social_share_url'] : '[current-page:url:absolute]',
+      '#required'      => TRUE,
+    );
+
+    $form['social_share']['social_share_replacements']['social_share_description'] = array(
+      '#type'          => 'textfield',
+      '#title'         => t('Description'),
+      '#description'   => t('Select the value to use for the description when sharing from this block. <br><strong>Note:</strong> Most social networks ignore this value.'),
+      '#default_value' => isset($settings['social_share_description']) ? $settings['social_share_description'] : '',
+    );
+
+    $form['social_share']['social_share_replacements']['social_share_image'] = array(
+      '#type'          => 'textfield',
+      '#title'         => t('Image'),
+      '#description'   => t('Select the value to use for the image when sharing from this block. <br><strong>Note:</strong> Very few social networks accept this value, most automatically grab images from the page markup. Facebook, for example, uses og:image metatag values for image options.'),
+      '#default_value' => isset($settings['social_share_image']) ? $settings['social_share_image'] : '',
+    );
+
+    $form['social_share']['social_share_replacements']['token_help'] = array(
+      '#theme' => 'token_tree',
+      '#token_types' => array('page'),
+    );
+
+    $networks = isset($settings['social_share_networks']) ? $settings['social_share_networks'] : array();
+    //$networks = variable_get('social_share_networks_' . $form['#node_type']->type, array());
+
+    $form['social_share']['social_share_networks'] = array(
+      '#type'        => 'fieldset',
+      '#title'       => t('Social Networks'),
+      '#description' => t('Specify the social network(s) to enable in this block.'),
+      '#collapsible' => TRUE,
+      '#collapsed'   => TRUE,
+      '#tree'        => TRUE,
+    );
+
+    $available_networks = social_share_available_networks();
+    foreach ($available_networks as $network) {
+      $form['social_share']['social_share_networks'][$network['machine_name']] = array(
+        '#type'  => 'checkbox',
+        '#title' => $network['human_name'],
+        '#default_value' => (in_array($network['machine_name'], $networks)) ? 1 : 0,
+      );
+    }
+  }
+  return $form;
+}
+
+/**
+ * Implements hook_block_save().
+ */
+function social_share_block_save($delta = '', $edit = array()) {
+  $settings = array();
+  foreach ($edit as $key => $val) {
+    if (substr($key, 0, 13) == 'social_share_') {
+      $settings[$key] = $val;
+    }
+  }
+  variable_set('social_share_block_settings', $settings);
+}
+
+/**
  * Implements hook_block_view().
  */
 function social_share_block_view($delta = '') {
