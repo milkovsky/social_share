@@ -4,6 +4,9 @@
  * @file social_share.networks.inc
  */
 
+/**
+ * Form callback: Social network tabledrag form.
+ */
 function social_share_admin_networks($form, &$form_state) {
   $networks = social_share_available_networks();
 
@@ -61,6 +64,9 @@ function social_share_admin_networks($form, &$form_state) {
   return $form;
 }
 
+/**
+ * Submit handler for social network tabledrag form.
+ */
 function social_share_admin_networks_submit($form, &$form_state) {
   $values = $form_state['values']['networks'];
   foreach($values as $network_id => $weight) {
@@ -72,10 +78,20 @@ function social_share_admin_networks_submit($form, &$form_state) {
   drupal_set_message('Your changes have been saved.');
 }
 
+
+/**
+ * Callback function for verifying whether a machine name exists or not.
+ */
 function social_share_check_machine_name($name) {
+  if (social_share_get_network($name)) {
+    return TRUE;
+  }
   return FALSE;
 }
 
+/**
+ * Form callback for social network add/edit form.
+ */
 function social_share_admin_networks_network($form, &$form_state, $network_id = NULL) {
   if ($network_id) {
     $network = social_share_get_network_by_id($network_id);
@@ -136,6 +152,9 @@ function social_share_admin_networks_network($form, &$form_state, $network_id = 
   return $form;
 }
 
+/**
+ * Submit handler for social network add/edit form.
+ */
 function social_share_admin_networks_network_submit($form, &$form_state) {
   $values = $form_state['values'];
 
@@ -164,6 +183,9 @@ function social_share_admin_networks_network_submit($form, &$form_state) {
   drupal_goto('admin/config/content/social-share/networks');
 }
 
+/**
+ * Form callback for confirmation of removal of a custom social network entry.
+ */
 function social_share_admin_networks_remove($form, &$form_state, $network_id = NULL) {
   $path = 'admin/config/content/social-share/networks';
   if (!$network_id) {
@@ -186,6 +208,9 @@ function social_share_admin_networks_remove($form, &$form_state, $network_id = N
   return confirm_form($form, $question, $path, NULL, t('Remove'), NULL, 'confirm');
 }
 
+/**
+ * Submit handler for social network remove confirmation form.
+ */
 function social_share_admin_networks_remove_submit($form, &$form_state) {
   db_delete('social_share_networks')
     ->condition('network_id', $form_state['values']['network_id'])
