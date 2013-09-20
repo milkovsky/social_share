@@ -137,3 +137,44 @@ function theme_social_share_large_icon($variables) {
   }
   return theme('social_share_link', $variables);
 }
+
+
+/**
+ * Theme callback for the social_share_admin_networks form.
+ */
+function theme_social_share_admin_networks($variables) {
+  $form = $variables['form'];
+  $rows = array();
+
+  foreach (element_children($form['networks']) as $id) {
+    $form['networks'][$id]['weight']['#attributes']['class'] = array('network-weight');
+    $ops = drupal_render($form['networks'][$id]['edit']);
+    if (isset($form['fnetworks'][$id]['edit'])) {
+      $ops .= '&nbsp;' . drupal_render($form['networks'][$id]['edit']);
+    }
+
+    $rows[] = array(
+      'data' => array(
+        drupal_render($form['networks'][$id]['human_name']),
+        drupal_render($form['networks'][$id]['url']),
+        $ops,
+        drupal_render($form['networks'][$id]['weight']),
+      ),
+      'class' => array('draggable'),
+    );
+  }
+
+  $header = array(t('Network'), t('Share URL'), t('Operations'), t('Weight'));
+  $table_id = 'networks-table';
+
+  $output = theme('table', array(
+    'header' => $header,
+    'rows' => $rows,
+    'attributes' => array('id' => $table_id),
+  ));
+
+  $output .= drupal_render_children($form);
+  drupal_add_tabledrag($table_id, 'order', 'sibling', 'network-weight');
+
+  return $output;
+}
