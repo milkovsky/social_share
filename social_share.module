@@ -294,11 +294,10 @@ function social_share_available_networks() {
       ->fields('s')
       ->orderBy('weight', 'ASC')
       ->orderBy('human_name', 'ASC')
-      ->execute()
-      ->fetchAssoc();
+      ->execute();
 
-    foreach ($result as $network) {
-      array_push($networks, $network);
+    while ($network = $result->fetchAssoc()) {
+      $networks[] = $network;
     }
   }
 
