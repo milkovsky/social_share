@@ -208,7 +208,7 @@ function social_share_admin_networks_network_submit($form, &$form_state) {
         ))
       ->execute();
 
-    social_share_update_network_order()
+    social_share_update_network_order();
 
     drupal_set_message('Your changes have been saved.');
   }
@@ -221,7 +221,7 @@ function social_share_admin_networks_network_submit($form, &$form_state) {
         ))
       ->execute();
 
-    social_share_update_network_order()
+    social_share_update_network_order();
 
     drupal_set_message('Your new network has been added.');
   }
@@ -261,7 +261,7 @@ function social_share_admin_networks_remove_submit($form, &$form_state) {
     ->condition('machine_name', $form_state['values']['machine_name'])
     ->execute();
 
-  social_share_update_network_order()
+  social_share_update_network_order();
 
   drupal_set_message(t('"@name" has been removed.', array('@name' => $form_state['values']['human_name'])));
   drupal_goto('admin/config/content/social-share/networks');
