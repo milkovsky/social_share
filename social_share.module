@@ -282,83 +282,37 @@ function social_share_form_node_type_form_alter(&$form, &$form_state) {
   }
 }
 
+/**
+ * Fetch all networks from the database.
+ * @return Array Configurations of all social networks
+ */
 function social_share_available_networks() {
-  return array(
-    array(
-      'machine_name' => 'facebook',
-      'human_name'   => t('Facebook'),
-      'url'          => 'http://facebook.com/sharer.php?u=%URL%&t=%TITLE%',
-    ),
-    array(
-      'machine_name' => 'twitter',
-      'human_name'   => t('Twitter'),
-      'url'          => 'http://twitter.com/intent/tweet?url=%URL%&text=%TITLE%',
-    ),
-    array(
-      'machine_name' => 'googleplus',
-      'human_name'   => t('Google Plus'),
-      'url'          => 'https://plus.google.com/share?url=%URL%',
-    ),
-    array(
-      'machine_name' => 'myspace',
-      'human_name'   => t('Myspace'),
-      'url'          => 'http://www.myspace.com/Modules/PostTo/Pages/default.aspx?u=%URL%&c=%TITLE%',
-    ),
-    array(
-      'machine_name' => 'msnlive',
-      'human_name'   => t('MSN Live'),
-      'url'          => 'http://profile.live.com/badge/?url=%URL%&title=%TITLE%&description=%DESC%',
-    ),
-    array(
-      'machine_name' => 'yahoo',
-      'human_name'   => t('Yahoo'),
-      'url'          => 'http://bookmarks.yahoo.com/toolbar/savebm?opener=tb&u=%URL%&t=%TITLE%&d=%DESC%',
-    ),
-    array(
-      'machine_name' => 'linkedin',
-      'human_name'   => t('LinkedIn'),
-      'url'          => 'http://www.linkedin.com/shareArticle?url=%URL%&mini=true&title=%TITLE%&ro=false&summary=%DESC%&source=',
-    ),
-    array(
-      'machine_name' => 'orkut',
-      'human_name'   => t('Orkut'),
-      'url'          => 'http://promote.orkut.com/preview?nt=orkut.com&tt=%TITLE%&du=%URL%&cn=%DESC%',
-    ),
-    array(
-      'machine_name' => 'digg',
-      'human_name'   => t('Digg'),
-      'url'          => 'http://digg.com/share?url=%URL%&title=%TITLE%',
-    ),
-    array(
-      'machine_name' => 'delicious',
-      'human_name'   => t('Delicious'),
-      'url'          => 'http://www.delicious.com/save?v=5&noui&jump=close&url=%URL%&title=%TITLE%',
-    ),
-    array(
-      'machine_name' => 'reddit',
-      'human_name'   => t('Reddit'),
-      'url'          => 'http://reddit.com/submit?url=%URL%&title=%TITLE%',
-    ),
-    array(
-      'machine_name' => 'stumbleupon',
-      'human_name'   => t('StumbleUpon'),
-      'url'          => 'http://stumbleupon.com/submit?url=%URL%&title=%TITLE%',
-    ),
-    array(
-      'machine_name' => 'hyves',
-      'human_name'   => t('Hyves'),
-      'url'          => 'http://www.hyves-share.nl/button/tip/?tipcategoryid=12&rating=5&title=%TITLE%&body=%DESC%Bron: [url=%URL%]%URL%[/url]',
-    ),
-    array(
-      'machine_name' => 'pinterest',
-      'human_name'   => t('Pinterest'),
-      'url'          => 'http://pinterest.com/pin/create/button/?url=%URL%&media=%IMAGE%&description=%DESC%',
-    ),
-  );
+  $networks = &drupal_static(__FUNCTION__, array());
+
+  if (empty($networks)) {
+    $result = db_select('social_share_networks', 's')
+      ->fields('s')
+      ->orderBy('weight', 'ASC')
+      ->orderBy('human_name', 'ASC')
+      ->execute()
+      ->fetchAssoc();
+
+    foreach ($result as $network) {
+      array_push($networks, $network);
+    }
+  }
+
+  return $networks;
 }
 
+/**
+ * Fetch a single network from the database.
+ * @param  String $network Social network machine name
+ * @return Array           Social network configuration
+ */
 function social_share_get_network($network) {
   $available_networks = social_share_available_networks();
+
   foreach($available_networks as $available_network) {
     if ($available_network['machine_name'] == $network) {
       return $available_network;
