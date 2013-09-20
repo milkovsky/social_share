@@ -349,6 +349,8 @@ function social_share_get_network($network) {
       return $available_network;
     }
   }
+
+  return FALSE;
 }
 
 /**
@@ -364,6 +366,8 @@ function social_share_get_network_by_id($network_id) {
       return $available_network;
     }
   }
+
+  return FALSE;
 }
 
 
