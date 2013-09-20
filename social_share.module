@@ -154,6 +154,7 @@ function social_share_block_configure($delta = '') {
 
   if ($delta == 'social_share') {
     $settings = variable_get('social_share_block_settings', array());
+
     $form['social_share'] = array(
       '#type'        => 'fieldset',
       '#title'       => t('Social Share Settings'),
@@ -243,7 +244,7 @@ function social_share_block_configure($delta = '') {
       $form['social_share']['social_share_networks'][$network['machine_name']] = array(
         '#type'  => 'checkbox',
         '#title' => $network['human_name'],
-        '#default_value' => (in_array($network['machine_name'], $networks)) ? 1 : 0,
+        '#default_value' => ($networks[$network['machine_name']]) ? 1 : 0,
       );
     }
   }
