@@ -75,9 +75,42 @@ function social_share_admin_networks_submit($form, &$form_state) {
       ->fields($weight)
       ->execute();
   }
+
+  social_share_update_network_order();
+
   drupal_set_message('Your changes have been saved.');
 }
 
+/**
+ * Helper function to reorder enabled networks for block and all node types
+ */
+function social_share_update_network_order() {
+  $available_networks = social_share_available_networks();
+
+  // Update network order by newly saved weight values for block, if enabled:
+  if (variable_get('social_share_block', 0)) {
+    $block_settings = variable_get('social_share_block_settings', array());
+    $new_order = array();
+    foreach ($available_networks as $available_network) {
+      $new_order[$available_network['machine_name']] = $block_settings['social_share_networks'][$available_network['machine_name']];
+    }
+    $block_settings['social_share_networks'] = $new_order;
+    variable_set('social_share_block_settings', $block_settings);
+  }
+
+  $node_types = array_keys(node_type_get_types());
+  foreach ($node_types as $type) {
+    if ($networks = variable_get('social_share_networks_' . $type, FALSE)) {
+      $new_order = array();
+      foreach ($available_networks as $available_network) {
+        if (in_array($available_network['machine_name'], $networks)) {
+          $new_order[] = $available_network['machine_name'];
+        }
+      }
+      variable_set('social_share_networks_' . $type, $new_order);
+    }
+  }
+}
 
 /**
  * Callback function for verifying whether a machine name exists or not.
@@ -175,6 +208,8 @@ function social_share_admin_networks_network_submit($form, &$form_state) {
         ))
       ->execute();
 
+    social_share_update_network_order()
+
     drupal_set_message('Your changes have been saved.');
   }
   else {
@@ -185,6 +220,9 @@ function social_share_admin_networks_network_submit($form, &$form_state) {
         'url' => $values['url']
         ))
       ->execute();
+
+    social_share_update_network_order()
+
     drupal_set_message('Your new network has been added.');
   }
   drupal_goto('admin/config/content/social-share/networks');
@@ -222,6 +260,8 @@ function social_share_admin_networks_remove_submit($form, &$form_state) {
   db_delete('social_share_networks')
     ->condition('machine_name', $form_state['values']['machine_name'])
     ->execute();
+
+  social_share_update_network_order()
 
   drupal_set_message(t('"@name" has been removed.', array('@name' => $form_state['values']['human_name'])));
   drupal_goto('admin/config/content/social-share/networks');
