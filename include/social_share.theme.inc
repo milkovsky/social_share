@@ -9,7 +9,11 @@
  */
 function theme_social_share_links($variables) {
   extract($variables);
-  if (!isset($nid) && !(isset($node))) {
+  if (!isset($block)) {
+    $block = FALSE;
+  }
+
+  if (!isset($nid) && !(isset($node) && !$block)) {
     return array();
   }
   elseif (isset($nid) && !isset($node)) {
@@ -20,22 +24,43 @@ function theme_social_share_links($variables) {
   }
 
   $content = array();
-  if (variable_get('social_share_enabled_' . $node->type, 0)) {
-    $networks = variable_get('social_share_networks_' . $node->type, array());
-    $theme_func = variable_get('social_share_theme_' . $node->type, 'social_share_link');
-
-    foreach ($networks as $network) {
-      $content[] = theme($theme_func, array('network' => $network, 'node' => $node));
+  if ($block) {
+    $settings = variable_get('social_share_block_settings', array());
+    if (isset($settings['social_share_theme'])) {
+      $theme_func = $settings['social_share_theme'];
     }
+    else {
+      $theme_func = 'social_share_link';
+    }
+
+    if (isset($settings['social_share_networks'])) {
+      foreach ($settings['social_share_networks'] as $network => $enabled) {
+        if ($enabled) {
+          $content[] = theme($theme_func, array('network' => $network, 'block' => TRUE));
+        }
+      }
+    }
+
   }
   else {
-    return array();
+    if (variable_get('social_share_enabled_' . $node->type, 0)) {
+      $networks = variable_get('social_share_networks_' . $node->type, array());
+      $theme_func = variable_get('social_share_theme_' . $node->type, 'social_share_link');
+
+      foreach ($networks as $network) {
+        $content[] = theme($theme_func, array('network' => $network, 'node' => $node));
+      }
+    }
+    else {
+      return array();
+    }
   }
 
   $content['#prefix'] = '<div class="social-share clearfix">';
   $content['#suffix'] = '</div>';
 
-  if (variable_get('social_share_show_label_' . $node->type, 0)) {
+  if (($block && isset($settings['social_share_show_label']) && $settings['social_share_show_label']) ||
+      variable_get('social_share_show_label_' . $node->type, 0)) {
     global $language;
     $label = variable_get('social_share_label', NULL);
     if (is_array($label)) {
@@ -53,6 +78,12 @@ function theme_social_share_links($variables) {
  * Theme function to render a single social share link (for a node)
  */
 function theme_social_share_link($variables) {
+  if (isset($variables['block']) && $variables['block']) {
+    $variables['node'] = menu_get_object();
+  }
+  else {
+    $variables['block'] = FALSE;
+  }
   if (!isset($variables['network']) || !isset($variables['node'])) {
     return array();
   }
@@ -64,12 +95,23 @@ function theme_social_share_link($variables) {
   $data = array('node' => $node);
   $options = array('language' => $language, 'clear' => TRUE);
 
-  $replacements = array(
-    '%TITLE%' => token_replace(variable_get('social_share_title_' . $node->type, '[node:title]'), $data, $options),
-    '%DESC%'  => strip_tags(token_replace(variable_get('social_share_description_' . $node->type, '[node:body]'), $data, $options)),
-    '%URL%'   => token_replace(variable_get('social_share_url_' . $node->type, '[node:url:absolute]'), $data, $options),
-    '%IMAGE%' => token_replace(variable_get('social_share_image_' . $node->type, ''), $data, $options),
-  );
+  if ($block) {
+    $settings = variable_get('social_share_block_settings', array());
+    $replacements = array(
+      '%TITLE%' => token_replace($settings['social_share_title'], $data, $options),
+      '%DESC%'  => strip_tags(token_replace($settings['social_share_description'], $data, $options)),
+      '%URL%'   => token_replace($settings['social_share_url'], $data, $options),
+      '%IMAGE%' => token_replace($settings['social_share_image'], $data, $options),
+    );
+  }
+  else {
+    $replacements = array(
+      '%TITLE%' => token_replace(variable_get('social_share_title_' . $node->type, '[node:title]'), $data, $options),
+      '%DESC%'  => strip_tags(token_replace(variable_get('social_share_description_' . $node->type, '[node:body]'), $data, $options)),
+      '%URL%'   => token_replace(variable_get('social_share_url_' . $node->type, '[node:url:absolute]'), $data, $options),
+      '%IMAGE%' => token_replace(variable_get('social_share_image_' . $node->type, ''), $data, $options),
+    );
+  }
 
   // if the shorten_urls module is installed & enabled, shorten the url being shared.
   if (module_exists('shorten')) {
@@ -122,6 +164,7 @@ function theme_social_share_small_icon($variables) {
   if (!isset($css_queue[$css_path])) {
     drupal_add_css($css_path);
   }
+
   return theme('social_share_link', $variables);
 }
 
@@ -135,6 +178,7 @@ function theme_social_share_large_icon($variables) {
   if (!isset($css_queue[$css_path])) {
     drupal_add_css($css_path);
   }
+
   return theme('social_share_link', $variables);
 }
 
