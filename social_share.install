@@ -63,7 +63,7 @@ function social_share_uninstall() {
 }
 
 /**
- * Install DB Schema
+ * Install DB Schema,
  * Populate Default Social Networks
  */
 function social_share_update_7200() {
