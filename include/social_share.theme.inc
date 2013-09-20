@@ -149,8 +149,8 @@ function theme_social_share_admin_networks($variables) {
   foreach (element_children($form['networks']) as $id) {
     $form['networks'][$id]['weight']['#attributes']['class'] = array('network-weight');
     $ops = drupal_render($form['networks'][$id]['edit']);
-    if (isset($form['networks'][$id]['edit'])) {
-      $ops .= '&nbsp;' . drupal_render($form['networks'][$id]['remove']);
+    if (isset($form['networks'][$id]['remove'])) {
+      $ops .= '&nbsp;&nbsp;&nbsp;' . drupal_render($form['networks'][$id]['remove']);
     }
 
     $rows[] = array(
