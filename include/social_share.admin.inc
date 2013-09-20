@@ -59,7 +59,8 @@ function social_share_admin_settings() {
   );
 
   $site_languages = language_list();
-  $labels = variable_get('social_share_label', array('en' => t('Share to')));
+  $default_language = language_default();
+  $labels = variable_get('social_share_label', array($default_language->language => t('Share to')));
   if (count($site_languages) > 1) {
     $form['social_share_label'] = array(
       '#type'          => 'fieldset',
