@@ -38,6 +38,32 @@ function social_share_menu() {
     'file path'        => drupal_get_path('module', 'social_share') .'/include',
     'file'             => 'social_share.networks.inc',
   );
+  $items['admin/config/content/social-share/networks/new'] = array(
+    'title'            => 'Networks',
+    'page callback'    => 'drupal_get_form',
+    'page arguments'   => array('social_share_admin_networks_network'),
+    'access arguments' => array('administer site configuration'),
+    'type'             => MENU_CALLBACK,
+    'file path'        => drupal_get_path('module', 'social_share') .'/include',
+    'file'             => 'social_share.networks.inc',
+  );
+  $items['admin/config/content/social-share/networks/%/edit'] = array(
+    'title'            => 'Networks',
+    'page callback'    => 'drupal_get_form',
+    'page arguments'   => array('social_share_admin_networks_network', 5),
+    'access arguments' => array('administer site configuration'),
+    'type'             => MENU_CALLBACK,
+    'file path'        => drupal_get_path('module', 'social_share') .'/include',
+    'file'             => 'social_share.networks.inc',
+  );
+  $items['admin/config/content/social-share/networks/%/remove'] = array(
+    'page callback'    => 'drupal_get_form',
+    'page arguments'   => array('social_share_admin_networks_remove', 5),
+    'access arguments' => array('administer site configuration'),
+    'type'             => MENU_CALLBACK,
+    'file path'        => drupal_get_path('module', 'social_share') .'/include',
+    'file'             => 'social_share.networks.inc',
+  );
   return $items;
 }
 
@@ -320,6 +346,21 @@ function social_share_get_network($network) {
 
   foreach($available_networks as $available_network) {
     if ($available_network['machine_name'] == $network) {
+      return $available_network;
+    }
+  }
+}
+
+/**
+ * Fetch a single network from the database by id.
+ * @param  String $network Social network machine name
+ * @return Array           Social network configuration
+ */
+function social_share_get_network_by_id($network_id) {
+  $available_networks = social_share_available_networks();
+
+  foreach($available_networks as $available_network) {
+    if ($available_network['network_id'] == $network_id) {
       return $available_network;
     }
   }
