@@ -168,7 +168,12 @@ function social_share_update_7201() {
   // Update label variable from string to array:
   $default_language = language_default();
   $label = variable_get('social_share_label', t('Share to'));
-  variable_set('social_share_label', array($default_language->language => $label));
+  if (is_array($label)) {
+    variable_set('social_share_label', $label);
+  }
+  else {
+    variable_set('social_share_label', array($default_language->language => $label));
+  }
 
   // Gather list of enabled networks:
   $available_networks = social_share_available_networks();
@@ -231,4 +236,6 @@ function social_share_update_7201() {
   foreach ($vars as $var) {
     variable_del($var);
   }
+
+  drupal_flush_all_caches();
 }
