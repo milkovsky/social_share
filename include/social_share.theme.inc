@@ -83,7 +83,7 @@ function theme_social_share_link($variables) {
   else {
     $variables['block'] = FALSE;
   }
-  if (!isset($variables['network']) || !isset($variables['node'])) {
+  if (!$variables['network']) {
     return array();
   }
 
@@ -96,12 +96,22 @@ function theme_social_share_link($variables) {
 
   if ($block) {
     $settings = variable_get('social_share_block_settings', array());
-    $replacements = array(
-      '%TITLE%' => token_replace($settings['social_share_title'], $data, $options),
-      '%DESC%'  => strip_tags(token_replace($settings['social_share_description'], $data, $options)),
-      '%URL%'   => token_replace($settings['social_share_url'], $data, $options),
-      '%IMAGE%' => token_replace($settings['social_share_image'], $data, $options),
-    );
+    if ($node) {
+      $replacements = array(
+        '%TITLE%' => token_replace($settings['social_share_title'], $data, $options),
+        '%DESC%'  => strip_tags(token_replace($settings['social_share_description'], $data, $options)),
+        '%URL%'   => token_replace($settings['social_share_url'], $data, $options),
+        '%IMAGE%' => token_replace($settings['social_share_image'], $data, $options),
+      );
+    }
+    else {
+      $replacements = array(
+        '%TITLE%' => variable_get('site_name', ''),
+        '%DESC%'  => '',
+        '%URL%'   => url($_GET['q'], array('absolute' => TRUE)),
+        '%IMAGE%' => '',
+      );
+    }
   }
   else {
     $replacements = array(
