@@ -160,3 +160,75 @@ function social_share_update_7200() {
       ->execute();
   }
 }
+
+/**
+ * Migrate from 7.x-1.x to 7.x-2.x
+ */
+function social_share_update_7201() {
+  // Update label variable from string to array:
+  $default_language = language_default();
+  $label = variable_get('social_share_label', t('Share to'));
+  variable_set('social_share_label', array($default_language['language'] => $label));
+
+  // Gather list of enabled networks:
+  $available_networks = social_share_available_networks();
+  $networks = variable_get('social_share_sites', array());
+  $enabled_networks = array();
+  foreach ($networks as $network => $enabled) {
+    if (!$enabled) {
+      unset($networks[$network]);
+    }
+  }
+
+  foreach ($available_networks as $available_network) {
+    if (isset($networks[$available_network['machine_name']])) {
+      $enabled_networks[] = $available_network['machine_name'];
+    }
+  }
+
+  // Set up enabled networks for each enabled node type.
+  $node_types = variable_get('social_share_node_types', array());
+  foreach($node_types as $type => $enabled) {
+    if ($enabled) {
+      variable_set('social_share_enabled_' . $type, 1);
+      variable_set('social_share_networks_' . $type, $enabled_networks);
+      variable_set('social_share_title_' . $type, '[node:title]');
+      variable_set('social_share_description_' . $type, '[node:body]');
+      variable_set('social_share_url_' . $type, '[node:url:absolute]');
+      variable_set('social_share_image_' . $type, '');
+      variable_set('social_share_theme_' . $type, 'social_share_link');
+      variable_set('social_share_show_label_' . $type, 1);
+    }
+  }
+
+  // Set up enabled networks for block (if block is enabled):
+  if (variable_get('social_share_block', 0)) {
+    $block_enabled_networks = array();
+    foreach ($available_networks as $available_network) {
+      $block_enabled_networks[$available_network['machine_name']] = (in_array($enabled_networks, $available_network['machine_name'])) ? 1 : 0;
+    }
+    $block_settings = array(
+      'social_share_show_label'  => 1,
+      'social_share_title'       => '[current-page:title]',
+      'social_share_description' => '',
+      'social_share_url'         => '[current-page:url:absolute]',
+      'social_share_image'       => '',
+      'social_share_theme'       => 'social_share_link',
+      'social_share_networks'    => $block_enabled_networks,
+    );
+
+    variable_set('social_share_block_settings', $block_settings);
+  }
+
+  // Clean up no longer needed variables
+  $vars = array(
+    'social_share_node_types',
+    'social_share_sites',
+    'social_share_teaser',
+    'social_share_weight',
+  );
+
+  foreach ($vars as $var) {
+    variable_del($var);
+  }
+}
