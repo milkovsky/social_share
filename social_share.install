@@ -45,6 +45,15 @@ function social_share_schema() {
 }
 
 /**
+ * Implements hook_install().
+ */
+function social_share_install() {
+  // Everything that needs to happen on first install is the same as
+  // what happens during update 7200.
+  social_share_update_7200();
+}
+
+/**
  * Implements hook_uninstall().
  */
 function social_share_uninstall() {
