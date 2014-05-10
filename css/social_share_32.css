@@ -1,0 +1,56 @@
+div.social-share span,
+div.social-share a {
+  background: transparent url(../icons/iconpack-32.png) no-repeat 0 0;
+  display: block;
+  float: left;
+  height: 32px;
+  margin-right: 4px;
+  margin-top: 4px;
+  text-indent: -9999px;
+  width: 32px;
+}
+div.social-share a.custom-network {
+  background: none;
+  text-decoration: underline;
+  text-indent: 0;
+  width: auto;
+}
+div.social-share a.social-share-delicious {
+  background-position: 0 0;
+}
+div.social-share a.social-share-digg {
+  background-position: -32px 0;
+}
+div.social-share a.social-share-facebook {
+  background-position: -64px 0;
+}
+div.social-share a.social-share-googleplus {
+  background-position: -96px 0;
+}
+div.social-share a.social-share-hyves {
+  background-position: -128px 0;
+}
+div.social-share a.social-share-linkedin {
+  background-position: -160px 0;
+}
+div.social-share a.social-share-msnlive {
+  background-position: -192px 0;
+}
+div.social-share a.social-share-myspace {
+  background-position: -224px 0;
+}
+div.social-share a.social-share-orkut {
+  background-position: -256px 0;
+}
+div.social-share a.social-share-reddit {
+  background-position: -288px 0;
+}
+div.social-share a.social-share-stumbleupon {
+  background-position: -320px 0;
+}
+div.social-share a.social-share-twitter {
+  background-position: -352px 0;
+}
+div.social-share a.social-share-yahoo {
+  background-position: -384px 0;
+}

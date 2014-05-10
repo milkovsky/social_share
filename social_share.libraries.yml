@@ -1,0 +1,11 @@
+drupal.social_share_16:
+  version: VERSION
+  css:
+    theme:
+      css/social_share_16.css: {}
+
+drupal.social_share_32:
+  version: VERSION
+  css:
+    theme:
+      css/social_share_32.css: {}

@@ -1,0 +1,11 @@
+max_length: 50
+social_share_description: '[node:body]'
+social_share_image: '[node:field_image]'
+social_share_show_label: 1
+social_share_theme: social_share_link
+social_share_title: '[node:title]'
+social_share_url: '[node:url:absolute]'
+share_title_block: '[current-page:title]'
+share_url_block: '[current-page:url:absolute]'
+share_description_block: ''
+share_image_block: ''

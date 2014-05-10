@@ -1,0 +1,5 @@
+social_share.settings:
+  title: 'Social Share'
+  description: 'Configure share link styling.'
+  parent: system.admin_config_content
+  route_name: social_share.settings

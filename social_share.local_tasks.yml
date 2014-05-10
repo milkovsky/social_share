@@ -1,0 +1,11 @@
+social_share.settings:
+  title: 'Settings'
+  route_name: social_share.settings
+  base_route: social_share.settings
+  weight: 2
+
+social_share.networks:
+  title: 'Networks'
+  route_name: social_share.networks
+  base_route: social_share.settings
+  weight: 1
