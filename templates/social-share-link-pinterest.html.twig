@@ -1,0 +1,24 @@
+{#
+/**
+ * @file
+ * Default theme implementation to display a social share link.
+ *
+ * Available variables:
+ * - attributes: array of HTML attributes populated by modules, intended to
+ *   be added to the main container tag of this template.
+ * - url: The url to link to.
+ * - media_url: The url of the image to use for sharing.
+ * - description: The description text to use for sharing.
+ *
+ * @ingroup themeable
+ */
+#}
+
+{{ attach_library('social_share/pinterest') }}
+
+<div {{ attributes.addClass('social-share-pinterest') }}
+    data-url="{{ url }}"
+    data-media-url="{{ media_url }}"
+    data-description="{{ description }}"
+    data-social-type="pinterest">
+</div>
