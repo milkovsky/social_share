@@ -12,6 +12,8 @@ use Drupal\social_share\SocialShareLinkManagerTrait;
 /**
  * Plugin implementation of the 'social_share_link' field type.
  *
+ * @todo: Make allowed options and their order configurable.
+ *
  * @FieldType(
  *   id = "social_share_link",
  *   label = @Translation("Social share link"),

@@ -3,3 +3,5 @@ name: Social share
 description: 'Custom social share buttons.'
 package: Social media
 core: 8.x
+dependencies:
+ - rules

@@ -5,6 +5,9 @@ namespace Drupal\social_share\Plugin\Field\FieldFormatter;
 use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\TypedData\TypedDataTrait;
+use Drupal\rules\Context\ContextConfig;
 use Drupal\social_share\SocialShareLinkManagerTrait;
 
 /**
@@ -21,6 +24,7 @@ use Drupal\social_share\SocialShareLinkManagerTrait;
 class SocialShareLinkFormatter extends FormatterBase {
 
   use SocialShareLinkManagerTrait;
+  use TypedDataTrait;
 
   /**
    * {@inheritdoc}
@@ -50,6 +54,61 @@ class SocialShareLinkFormatter extends FormatterBase {
     }
 
     return $elements;
+  }
+
+  public static function defaultSettings() {
+    return ['context_values' => []] + parent::defaultSettings();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function settingsForm(array $form, FormStateInterface $form_state) {
+    $form = parent::settingsForm($form, $form_state);
+
+    // Get allowed sharing links.
+    // @todo: Improve when https://www.drupal.org/node/2329937 got committed.
+    $field_item = $this->getTypedDataManager()
+      ->create($this->fieldDefinition->getItemDefinition());
+    $plugin_ids = $field_item->getPossibleValues();
+
+    // Collect all needed context definitions and remember which link needs
+    // which context.
+    $used_context = [];
+    $used_by_plugins = [];
+    $definitions = $this->getSocialShareLinkManager()->getDefinitions();
+
+    foreach ($plugin_ids as $plugin_id) {
+      // Just silently ignore outdated, gone plugins.
+      if (!isset($definitions[$plugin_id])) {
+        continue;
+      }
+      foreach ($definitions[$plugin_id]['context'] as $name => $context_definition) {
+        $used_context[$name] = $context_definition;
+        $used_by_plugins += [$name => []];
+        $used_by_plugins[$name][] = $plugin_id;
+      }
+    }
+    // @todo: Use context configuration traits for configuring this.
+    $form['context_values']['#tree'] = TRUE;
+    foreach ($used_context as $name => $context_definition) {
+      $help = $this->t('Used by: %plugins', ['%plugins' => implode(', ', $used_by_plugins[$name])]);
+      $form['context_values'][$name] = [
+        '#type' => 'textfield',
+        '#title' => $context_definition->getLabel(),
+        '#description' => $context_definition->getDescription() . ' ' . $help,
+        '#default_value' => isset($this->configuration['context_values'][$name]) ? $this->configuration['context_values'][$name] : $context_definition->getDefaultValue(),
+      ];
+    }
+
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function settingsSummary() {
+    return parent::settingsSummary();
   }
 
 }

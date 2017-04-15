@@ -27,4 +27,22 @@ class SocialShareLink extends Plugin {
    */
   public $label;
 
+  /**
+   * The category under which the plugin should be listed in the UI.
+   *
+   * @var \Drupal\Core\Annotation\Translation
+   *
+   * @ingroup plugin_translatable
+   */
+  public $category;
+
+  /**
+   * Defines the used context of the action plugin.
+   *
+   * Array keys are the names of the contexts and values context definitions.
+   *
+   * @var \Drupal\Core\Annotation\ContextDefinition[]
+   */
+  public $context = [];
+
 }

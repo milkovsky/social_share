@@ -5,6 +5,8 @@ namespace Drupal\social_share;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\CategorizingPluginManagerTrait;
 use Drupal\Core\Plugin\DefaultPluginManager;
+use Drupal\Core\Plugin\Discovery\ContainerDerivativeDiscoveryDecorator;
+use Drupal\rules\Context\AnnotatedClassDiscovery;
 use Drupal\social_share\Annotation\SocialShareLink;
 
 /**
@@ -30,4 +32,16 @@ class SocialShareLinkManager extends DefaultPluginManager implements SocialShare
     parent::__construct('Plugin/SocialShareLink', $namespaces, $module_handler, SocialShareLinkInterface::class, SocialShareLink::class);
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  protected function getDiscovery() {
+    if (!$this->discovery) {
+      // Swap out the annotated class discovery used, so we can control the
+      // annotation classes picked.
+      $discovery = new AnnotatedClassDiscovery($this->subdir, $this->namespaces, $this->pluginDefinitionAnnotationName);
+      $this->discovery = new ContainerDerivativeDiscoveryDecorator($discovery);
+    }
+    return $this->discovery;
+  }
 }

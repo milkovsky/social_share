@@ -7,6 +7,8 @@ use Drupal\Component\Plugin\PluginInspectionInterface;
 
 /**
  * Interface for social share links.
+ *
+ * @todo: Allow preparing of multi-rendering.
  */
 interface SocialShareLinkInterface extends PluginInspectionInterface, ContextAwarePluginInterface {
 
