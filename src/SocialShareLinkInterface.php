@@ -18,10 +18,13 @@ interface SocialShareLinkInterface extends PluginInspectionInterface, ContextAwa
    * @return mixed[]
    *   The render array.
    */
-  public function render();
+  public function build();
 
   /**
    * Gets the template info for the link's template(s).
+   *
+   * Note that there as no plugin configuration available when this method is
+   * called.
    *
    * @return array[]
    *   An array as it would be returned by a hook_theme() implementation.

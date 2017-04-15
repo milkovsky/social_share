@@ -2,12 +2,12 @@
 
 namespace Drupal\social_share;
 
-use Drupal\Component\Plugin\PluginManagerInterface;
+use Drupal\Component\Plugin\CategorizingPluginManagerInterface;
 
 /**
  * Interface for the social share link manager.
  */
-interface SocialShareLinkManagerInterface extends PluginManagerInterface {
+interface SocialShareLinkManagerInterface extends CategorizingPluginManagerInterface {
 
   /**
    * Creates a pre-configured instance of a social share link plugin.
