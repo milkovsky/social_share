@@ -6,9 +6,10 @@ use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\TypedData\TypedDataTrait;
-use Drupal\rules\Context\ContextConfig;
 use Drupal\social_share\SocialShareLinkManagerTrait;
+use Drupal\typed_data\PlaceholderResolverTrait;
 
 /**
  * Plugin implementation of the 'social_share_link' formatter.
@@ -23,6 +24,7 @@ use Drupal\social_share\SocialShareLinkManagerTrait;
  */
 class SocialShareLinkFormatter extends FormatterBase {
 
+  use PlaceholderResolverTrait;
   use SocialShareLinkManagerTrait;
   use TypedDataTrait;
 
@@ -31,16 +33,29 @@ class SocialShareLinkFormatter extends FormatterBase {
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $elements = [];
+    $entity = $items->getEntity();
     $link_manager = $this->getSocialShareLinkManager();
+    $bubbleable_metadata = new BubbleableMetadata();
 
     foreach ($items as $delta => $item) {
       try {
-        // @todo: Prepare configuration / context.
         $configuration = [];
         $share_link = $link_manager->createInstance($item->value, $configuration);
+
+        // Set the context on the plugin.
         foreach ($share_link->getContextDefinitions() as $name => $definition) {
+          // Process the context value.
+          // @todo: Improve rules context API to make it better re-usable and
+          // re-use it here.
+          if (is_scalar($this->settings['context_values'][$name])) {
+            $value =& $this->settings['context_values'][$name];
+            $value = $this->getPlaceholderResolver()->replacePlaceholders($value, [
+              $entity->getEntityTypeId() => $entity->getTypedData(),
+            ], $bubbleable_metadata);
+          }
           $share_link->setContextValue($name, $this->settings['context_values'][$name]);
         }
+
         $elements[$delta] = $share_link->build();
       }
       catch (PluginException $e) {
@@ -48,7 +63,7 @@ class SocialShareLinkFormatter extends FormatterBase {
         // links.
       }
     }
-
+    $bubbleable_metadata->applyTo($elements);
     return $elements;
   }
 

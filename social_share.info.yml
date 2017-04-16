@@ -4,4 +4,4 @@ description: 'Custom social share buttons.'
 package: Social media
 core: 8.x
 dependencies:
- - rules
+ - typed_data
