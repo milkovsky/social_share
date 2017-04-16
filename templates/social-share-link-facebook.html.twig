@@ -31,10 +31,10 @@
 {% set url_params = {
     'app_id': '1389892087910588',
     'name': title,
-    'link': url|default(url('<current>')),
+    'link': url|default(url('<current>')|render|striptags),
     'caption': caption,
     'description': description,
-    'picture': media_image_url,
+    'picture': media_image_url|default(media_url),
     'source': media_url,
     'ref': facebook_ref,
     'display': 'popup',

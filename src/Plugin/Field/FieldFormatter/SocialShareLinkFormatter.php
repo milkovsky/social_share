@@ -38,13 +38,9 @@ class SocialShareLinkFormatter extends FormatterBase {
         // @todo: Prepare configuration / context.
         $configuration = [];
         $share_link = $link_manager->createInstance($item->value, $configuration);
-
-        $share_link->setContextValue('text', 'example');
-        $share_link->setContextValue('url', 'http://orf.at');
-        $share_link->setContextValue('media_url', 'http://placeimg.com/640/480/any');
-        $share_link->setContextValue('title', 'Share it');
-        $share_link->setContextValue('description', 'example2');
-
+        foreach ($share_link->getContextDefinitions() as $name => $definition) {
+          $share_link->setContextValue($name, $this->settings['context_values'][$name]);
+        }
         $elements[$delta] = $share_link->build();
       }
       catch (PluginException $e) {
@@ -56,7 +52,13 @@ class SocialShareLinkFormatter extends FormatterBase {
     return $elements;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public static function defaultSettings() {
+    // We cannot apply defaults here without having knowledge about the field
+    // definition. Thus apply the defaults later. Still all setting keys must
+    // be listed here, such that they get stored.
     return ['context_values' => []] + parent::defaultSettings();
   }
 
@@ -97,7 +99,7 @@ class SocialShareLinkFormatter extends FormatterBase {
         '#type' => 'textfield',
         '#title' => $context_definition->getLabel(),
         '#description' => $context_definition->getDescription() . ' ' . $help,
-        '#default_value' => isset($this->configuration['context_values'][$name]) ? $this->configuration['context_values'][$name] : $context_definition->getDefaultValue(),
+        '#default_value' => isset($this->settings['context_values'][$name]) ? $this->settings['context_values'][$name] : $context_definition->getDefaultValue(),
       ];
     }
 
