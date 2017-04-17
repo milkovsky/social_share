@@ -4,6 +4,7 @@ namespace Drupal\social_share\Plugin\Field\FieldType;
 
 use Drupal\Core\Field\FieldItemBase;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\TypedData\DataDefinition;
 use Drupal\Core\TypedData\OptionsProviderInterface;
@@ -78,9 +79,41 @@ class SocialShareLinkItem extends FieldItemBase implements OptionsProviderInterf
    * {@inheritdoc}
    */
   public function getSettableOptions(AccountInterface $account = NULL) {
-    return array_map(function ($definition) {
+    $all_plugins = array_map(function ($definition) {
       return $definition['label'];
     }, $this->getSocialShareLinkManager()->getDefinitions());
+
+    $allowed_plugins = $this->getSetting('allowed_values') ? explode("\r\n", $this->getSetting('allowed_values')) : array_keys($this->getSocialShareLinkManager()->getDefinitions());
+    $options = [];
+    foreach ($allowed_plugins as $plugin_id) {
+      $options[$plugin_id] = $all_plugins[$plugin_id];
+    }
+    return $options;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function storageSettingsForm(array &$form, FormStateInterface $form_state, $has_data) {
+    $element = parent::storageSettingsForm($form, $form_state, $has_data);
+
+    $element['allowed_values'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Allowed plugins'),
+      '#description' => $this->t('Allows restricting and ordering the allowed plugins. List one plugin ID per line.'),
+      '#default_value' => $this->getSetting('allowed_values') ?: implode("\r\n", array_keys($this->getSocialShareLinkManager()->getDefinitions())),
+    ];
+    return $element;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function defaultStorageSettings() {
+    return parent::defaultStorageSettings() + [
+      // If NULL is given, all plugins are used in default order.
+      'allowed_values' => NULL,
+    ];
   }
 
 }
