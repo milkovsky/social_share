@@ -34,11 +34,6 @@ use Drupal\social_share\SocialShareLinkInterface;
  *       description = @Translation("The description text to use for sharing."),
  *       required = false
  *     ),
- *     "description_short" = @ContextDefinition("string",
- *       label = @Translation("Description (short)"),
- *       description = @Translation("A short description text to use for sharing. Maximum length is 140 characters."),
- *       required = false
- *     ),
  *     "caption" = @ContextDefinition("string",
  *       label = @Translation("Caption"),
  *       description = @Translation("The caption used for sharing."),
