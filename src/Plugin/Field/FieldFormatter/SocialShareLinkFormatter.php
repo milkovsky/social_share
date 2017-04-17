@@ -93,6 +93,7 @@ class SocialShareLinkFormatter extends FormatterBase {
         '#title' => $context_definition->getLabel(),
         '#description' => $context_definition->getDescription() . ' ' . $help,
         '#default_value' => isset($this->settings['context_values'][$name]) ? $this->settings['context_values'][$name] : $context_definition->getDefaultValue(),
+        '#required' => $context_definition->isRequired(),
       ];
     }
 

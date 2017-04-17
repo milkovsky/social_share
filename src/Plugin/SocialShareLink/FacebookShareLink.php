@@ -15,9 +15,14 @@ use Drupal\social_share\SocialShareLinkInterface;
  *   label = @Translation("Facebook"),
  *   category = @Translation("Default"),
  *   context = {
- *     "text" = @ContextDefinition(
+ *     "facebook_app_id" = @ContextDefinition("string",
+ *       label = @Translation("Facebook app id"),
+ *       description = @Translation("The facebook app id to use when generating the link."),
+ *       default_value = "Share on facebook"
+ *     ),
+ *     "facebook_link_text" = @ContextDefinition(
  *       data_type = "string",
- *       label = @Translation("Link text"),
+ *       label = @Translation("Facebook link text"),
  *       description = @Translation("The text of the sharing link.")
  *     ),
  *     "title" = @ContextDefinition("string",

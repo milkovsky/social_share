@@ -7,6 +7,9 @@
     var left = (screen.width / 2) - (width / 2),
       top = (screen.height / 2) - (height / 2);
 
+    width = Math.min(width, screen.width);
+    height = Math.min(height, screen.height);
+
     window.open(
       url,
       "",
