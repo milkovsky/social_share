@@ -44,4 +44,32 @@ class SocialShareLinkManager extends DefaultPluginManager implements SocialShare
     }
     return $this->discovery;
   }
+
+  /**
+   * {@inheritdoc}
+   *
+   * @todo: Ensure the data type of the context matches and keep the context
+   * separate if it does not.
+   */
+  public function getMergedContextDefinitions(array $plugin_ids) {
+
+    // Collect all needed context definitions and remember which link needs
+    // which context.
+    $used_context = [];
+    $used_by_plugins = [];
+    $definitions = $this->getDefinitions();
+
+    foreach ($plugin_ids as $plugin_id) {
+      // Just silently ignore outdated, gone plugins.
+      if (!isset($definitions[$plugin_id])) {
+        continue;
+      }
+      foreach ($definitions[$plugin_id]['context'] as $name => $context_definition) {
+        $used_context[$name] = $context_definition;
+        $used_by_plugins += [$name => []];
+        $used_by_plugins[$name][] = $plugin_id;
+      }
+    }
+    return [$used_context, $used_by_plugins];
+  }
 }

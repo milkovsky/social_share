@@ -82,30 +82,8 @@ class SocialShareLinkFormatter extends FormatterBase {
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $form = parent::settingsForm($form, $form_state);
+    list($used_context, $used_by_plugins) = $this->getMergedContextDefinitions();
 
-    // Get allowed sharing links.
-    // @todo: Improve when https://www.drupal.org/node/2329937 got committed.
-    $field_item = $this->getTypedDataManager()
-      ->create($this->fieldDefinition->getItemDefinition());
-    $plugin_ids = $field_item->getPossibleValues();
-
-    // Collect all needed context definitions and remember which link needs
-    // which context.
-    $used_context = [];
-    $used_by_plugins = [];
-    $definitions = $this->getSocialShareLinkManager()->getDefinitions();
-
-    foreach ($plugin_ids as $plugin_id) {
-      // Just silently ignore outdated, gone plugins.
-      if (!isset($definitions[$plugin_id])) {
-        continue;
-      }
-      foreach ($definitions[$plugin_id]['context'] as $name => $context_definition) {
-        $used_context[$name] = $context_definition;
-        $used_by_plugins += [$name => []];
-        $used_by_plugins[$name][] = $plugin_id;
-      }
-    }
     // @todo: Use context configuration traits for configuring this.
     $form['context_values']['#tree'] = TRUE;
     foreach ($used_context as $name => $context_definition) {
@@ -125,7 +103,36 @@ class SocialShareLinkFormatter extends FormatterBase {
    * {@inheritdoc}
    */
   public function settingsSummary() {
-    return parent::settingsSummary();
+    $summary = parent::settingsSummary();
+    list($used_context, $used_by_plugins) = $this->getMergedContextDefinitions();
+
+    foreach ($used_context as $name => $context_definition) {
+      if (!empty($this->settings['context_values'][$name])) {
+        $summary[] = $this->t('@label: @value', [
+          '@label' => $context_definition->getLabel(),
+          '@value' => $this->settings['context_values'][$name],
+        ]);
+      }
+    }
+    return $summary;
+  }
+
+  /**
+   * Merges the context definitions of all given plugins.
+   *
+   * @see \Drupal\social_share\SocialShareLinkManagerInterface::getMergedContextDefinitions
+   *
+   * @return array[]
+   */
+  protected function getMergedContextDefinitions() {
+    // Get allowed sharing links.
+    // @todo: Improve when https://www.drupal.org/node/2329937 got committed.
+    $field_item = $this->getTypedDataManager()
+      ->create($this->fieldDefinition->getItemDefinition());
+    $plugin_ids = $field_item->getPossibleValues();
+
+    return $this->getSocialShareLinkManager()
+      ->getMergedContextDefinitions($plugin_ids);
   }
 
 }

@@ -26,4 +26,18 @@ interface SocialShareLinkManagerInterface extends CategorizingPluginManagerInter
    */
   public function createInstance($plugin_id, array $configuration = []);
 
+  /**
+   * Merges the context definitions of all given plugins.
+   *
+   * This allows configuring multiple plugins at once. Each plugin will receive
+   * the same context value for context that is named the same way.
+   *
+   * @return array[]
+   *   A numerically indexed array containing two arrays:
+   *   - The array of merged context definitions, keyed by context name.
+   *   - An array mapping the context definitions names to an array of plugin
+   *     ids that are using this context.
+   */
+  public function getMergedContextDefinitions(array $plugin_ids);
+
 }
