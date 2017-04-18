@@ -6,7 +6,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\CategorizingPluginManagerTrait;
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\Plugin\Discovery\ContainerDerivativeDiscoveryDecorator;
-use Drupal\rules\Context\AnnotatedClassDiscovery;
+use Drupal\typed_data\Context\AnnotatedClassDiscovery;
 use Drupal\social_share\Annotation\SocialShareLink;
 
 /**
@@ -72,4 +72,5 @@ class SocialShareLinkManager extends DefaultPluginManager implements SocialShare
     }
     return [$used_context, $used_by_plugins];
   }
+
 }
