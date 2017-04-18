@@ -2,7 +2,6 @@
 
 namespace Drupal\social_share\Plugin\SocialShareLink;
 
-use Drupal\Core\Annotation\Translation;
 use Drupal\Core\Plugin\ContextAwarePluginBase;
 use Drupal\Core\Template\Attribute;
 use Drupal\social_share\SocialShareLinkInterface;
@@ -18,12 +17,12 @@ use Drupal\social_share\SocialShareLinkInterface;
  *     "facebook_app_id" = @ContextDefinition("string",
  *       label = @Translation("Facebook app id"),
  *       description = @Translation("The facebook app id to use when generating the link."),
- *       default_value = "Share on facebook"
  *     ),
  *     "facebook_link_text" = @ContextDefinition(
  *       data_type = "string",
  *       label = @Translation("Facebook link text"),
- *       description = @Translation("The text of the sharing link.")
+ *       description = @Translation("The text of the sharing link."),
+ *       default_value = "Share on facebook",
  *     ),
  *     "title" = @ContextDefinition("string",
  *       label = @Translation("Title"),
