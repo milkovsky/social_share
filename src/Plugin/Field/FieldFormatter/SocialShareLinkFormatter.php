@@ -51,7 +51,7 @@ class SocialShareLinkFormatter extends FormatterBase {
             $value =& $this->settings['context_values'][$name];
             $value = $this->getPlaceholderResolver()->replacePlaceholders($value, [
               $entity->getEntityTypeId() => $entity->getTypedData(),
-            ], $bubbleable_metadata);
+            ], $bubbleable_metadata, ['clear' => TRUE]);
           }
           $share_link->setContextValue($name, $this->settings['context_values'][$name]);
         }
