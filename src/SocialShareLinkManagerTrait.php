@@ -2,6 +2,9 @@
 
 namespace Drupal\social_share;
 
+use Drupal\Core\TypedData\TypedDataTrait;
+use Drupal\typed_data\PlaceholderResolverTrait;
+
 /**
  * Provides the social share link manager.
  */
