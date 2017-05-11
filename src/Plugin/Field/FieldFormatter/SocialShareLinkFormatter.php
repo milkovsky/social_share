@@ -81,7 +81,7 @@ class SocialShareLinkFormatter extends FormatterBase {
     $form = parent::settingsForm($form, $form_state);
     list($used_context, $used_by_plugins) = $this->getMergedContextDefinitions();
 
-    $form = $this->buildConfigurationForm($form, $form_state, $used_context, $used_by_plugins);
+    $form = $this->buildContextConfigurationForm($form, $form_state, $this->settings, $used_context, $used_by_plugins);
     return $form;
   }
 

@@ -55,12 +55,14 @@ trait SocialShareLinkConfigurationTrait {
   }
 
   /**
-   * Builds the configuration form.
+   * Builds the configuration form for the used context.
    *
    * @param array $form
    *   The form to attach to.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The form state.
+   * @param array $configuration
+   *   The array of configuration values, containing the context configuration.
    * @param array $used_context
    *   The merged context definitions, as returned from
    *   \Drupal\social_share\SocialShareLinkManagerInterface::getMergedContextDefinitions().
@@ -71,7 +73,7 @@ trait SocialShareLinkConfigurationTrait {
    * @return array
    *   The modified form array.
    */
-  protected function buildConfigurationForm(array $form, FormStateInterface $form_state, array $used_context, array $used_by_plugins) {
+  protected function buildContextConfigurationForm(array $form, FormStateInterface $form_state, array $configuration, array $used_context, array $used_by_plugins) {
     // @todo: Use context configuration traits for configuring this.
     $form['context_values']['#tree'] = TRUE;
     foreach ($used_context as $name => $context_definition) {
@@ -80,7 +82,7 @@ trait SocialShareLinkConfigurationTrait {
         '#type' => 'textfield',
         '#title' => $context_definition->getLabel(),
         '#description' => $context_definition->getDescription() . ' ' . $help,
-        '#default_value' => isset($this->settings['context_values'][$name]) ? $this->settings['context_values'][$name] : $context_definition->getDefaultValue(),
+        '#default_value' => isset($configuration['context_values'][$name]) ? $configuration['context_values'][$name] : $context_definition->getDefaultValue(),
         '#required' => $context_definition->isRequired(),
       ];
     }
