@@ -22,6 +22,8 @@ trait SocialShareLinkConfigurationTrait {
   /**
    * Prepares building the social link for the given plugin.
    *
+   * @param array $configuration
+   *   The array of configuration values, containing the context configuration.
    * @param $pluginId
    *   The ID of link to render.
    * @param \Drupal\Core\Render\BubbleableMetadata $bubbleable_metadata
@@ -32,24 +34,23 @@ trait SocialShareLinkConfigurationTrait {
    * @return \Drupal\social_share\SocialShareLinkInterface
    *   The social share link, ready for rendering.
    */
-  protected function prepareLinkBuild($pluginId,BubbleableMetadata $bubbleable_metadata, EntityInterface $entity = NULL) {
+  protected function prepareLinkBuild(array $configuration, $pluginId, BubbleableMetadata $bubbleable_metadata, EntityInterface $entity = NULL) {
     $link_manager = $this->getSocialShareLinkManager();
-
-    $configuration = [];
-    $share_link = $link_manager->createInstance($pluginId, $configuration);
+    $share_link = $link_manager->createInstance($pluginId, []);
 
     // Set the context on the plugin.
     foreach ($share_link->getContextDefinitions() as $name => $definition) {
       // Process the context value.
       // @todo: Improve rules context API to make it better re-usable and
       // re-use it here.
-      if (is_scalar($this->settings['context_values'][$name])) {
-        $value =& $this->settings['context_values'][$name];
-        $value = $this->getPlaceholderResolver()->replacePlaceholders($value, [
+      if (is_scalar($configuration['context_values'][$name])) {
+        $value =& $configuration['context_values'][$name];
+        $data = isset($entity) ? [
           $entity->getEntityTypeId() => $entity->getTypedData(),
-        ], $bubbleable_metadata, ['clear' => TRUE]);
+        ] : [];
+        $value = $this->getPlaceholderResolver()->replacePlaceholders($value, $data, $bubbleable_metadata, ['clear' => TRUE]);
       }
-      $share_link->setContextValue($name, $this->settings['context_values'][$name]);
+      $share_link->setContextValue($name, $configuration['context_values'][$name]);
     }
     return $share_link;
   }

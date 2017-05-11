@@ -18,7 +18,8 @@ use Drupal\social_share\SocialShareLinkInterface;
  *     "pinterest_link_text" = @ContextDefinition(
  *       data_type = "string",
  *       label = @Translation("Pinterest link text"),
- *       description = @Translation("The text of the sharing link.")
+ *       description = @Translation("The text of the sharing link."),
+ *       default_value = "Share on pinterest",
  *     ),
  *     "title" = @ContextDefinition("string",
  *       label = @Translation("Title"),

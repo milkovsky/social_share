@@ -34,7 +34,7 @@ class SocialShareLinkFormatter extends FormatterBase {
 
     foreach ($items as $delta => $item) {
       try {
-        $share_link = $this->prepareLinkBuild($item->value, $bubbleable_metadata, $entity);
+        $share_link = $this->prepareLinkBuild($this->settings, $item->value, $bubbleable_metadata, $entity);
         $elements[$delta] = $share_link->build();
       }
       catch (PluginException $e) {

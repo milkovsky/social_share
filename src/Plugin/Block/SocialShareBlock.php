@@ -5,7 +5,7 @@ namespace Drupal\social_share\Plugin\Block;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Form\SubformState;
+use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\social_share\SocialShareLinkConfigurationTrait;
 
 /**
@@ -16,13 +16,15 @@ use Drupal\social_share\SocialShareLinkConfigurationTrait;
  *   admin_label = @Translation("Social share links"),
  *   category = @Translation("Social"),
  *   context = {
- *     "entity" = @ContextDefinition("entity",
+ *     "entity" = @ContextDefinition("entity:node",
  *       label = @Translation("Content entity"),
  *       description = @Translation("An optional content entity which may be used as source for replacement tokens, accessible under the name 'entity'."),
  *       required = false,
  *     )
  *   }
  * )
+ *
+ * // @todo: Define the entity as type 'entity' and have proper context mapping.
  */
 class SocialShareBlock extends BlockBase {
 
@@ -33,7 +35,7 @@ class SocialShareBlock extends BlockBase {
    */
   public function defaultConfiguration() {
     return parent::defaultConfiguration() + [
-      'allowed_plugins' => implode("\r\n", array_keys($this->getSocialShareLinkManager()->getDefinitions())),
+      'allowed_plugins' => [],
     ];
   }
 
@@ -44,11 +46,18 @@ class SocialShareBlock extends BlockBase {
     $form = parent::buildConfigurationForm($form, $form_state);
     $form['context_mapping']['entity']['#description'] = $this->t("An optional content entity which may be used as source for replacement tokens, accessible under the name 'entity'.");
 
+
+    // Initialize empty defaults. We cannot use defaultConfiguration() for that
+    // as it merges in array values all the time.
+    if (empty($this->configuration['allowed_plugins'])) {
+      $this->configuration['allowed_plugins'] = array_keys($this->getSocialShareLinkManager()->getDefinitions());
+    }
+
     $form['allowed_plugins'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Allowed plugins'),
       '#description' => $this->t('Allows restricting and ordering the allowed plugins. List one plugin ID per line.'),
-      '#default_value' => $this->configuration['allowed_plugins'],
+      '#default_value' => implode("\r\n", $this->configuration['allowed_plugins']),
       '#required' => TRUE,
     ];
 
@@ -85,13 +94,12 @@ class SocialShareBlock extends BlockBase {
       // Remove 'context_values' and append 'allowed_plugins' instead.
       array_pop($parents);
       $parents[] = 'allowed_plugins';
-      $this->configuration['allowed_plugins'] = NestedArray::getValue($values, $parents);
-
+      $value = NestedArray::getValue($values, $parents);
       // Sometimes delimiters end up with \n instead of \r\n.
-      $this->configuration['allowed_plugins'] = str_replace("\r\n", "\n", $this->configuration['allowed_plugins']);
+      $this->configuration['allowed_plugins'] = explode("\n", str_replace("\r\n", "\n", $value));
 
       list($used_context, $used_by_plugins) = $this->getSocialShareLinkManager()
-        ->getMergedContextDefinitions(explode("\n", $this->configuration['allowed_plugins']));
+        ->getMergedContextDefinitions($this->configuration['allowed_plugins']);
     }
 
     $form_element = $this->buildContextConfigurationForm($form_element, $form_state, $this->configuration, $used_context, $used_by_plugins);
@@ -114,36 +122,39 @@ class SocialShareBlock extends BlockBase {
     return NestedArray::getValue($form , $array_parents);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     parent::submitConfigurationForm($form, $form_state);
     if (!$form_state->getErrors()) {
       $value = $form_state->getValue('context_config');
       $this->configuration['context_values'] = $value['context_values'];
-      $this->configuration['allowed_plugins'] = $form_state->getValue('allowed_plugins');
+      // Sometimes delimiters end up with \n instead of \r\n.
+      $this->configuration['allowed_plugins'] = explode("\n", str_replace("\r\n", "\n", $form_state->getValue('allowed_plugins')));
     }
-  }
-
-  /**
-   * Merges the context definitions of all given plugins.
-   *
-   * @see \Drupal\social_share\SocialShareLinkManagerInterface::getMergedContextDefinitions
-   *
-   * @return array[]
-   */
-  protected function getMergedContextDefinitions() {
-    // Get allowed sharing links.
-    // @todo: Improve when https://www.drupal.org/node/2329937 got committed.
-    $field_item = $this->getTypedDataManager()
-      ->create($this->fieldDefinition->getItemDefinition());
-    $plugin_ids = $field_item->getPossibleValues();
-
-    return ;
   }
 
   /**
    * {@inheritdoc}
    */
   public function build() {
+    $elements = [];
+    $bubbleable_metadata = new BubbleableMetadata();
+    $entity = $this->getContextValue('entity');
 
+    foreach ($this->configuration['allowed_plugins'] as $plugin_id) {
+      try {
+        $share_link = $this->prepareLinkBuild($this->configuration, $plugin_id, $bubbleable_metadata, $entity);
+        $elements[] = $share_link->build();
+      }
+      catch (PluginException $e) {
+        // Silently ignore possibly outdated data values of not existing share
+        // links.
+      }
+    }
+    $bubbleable_metadata->applyTo($elements);
+    return $elements;
   }
+
 }
