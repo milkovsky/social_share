@@ -5,8 +5,6 @@ namespace Drupal\social_share;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\BubbleableMetadata;
-use Drupal\Core\TypedData\TypedDataTrait;
-use Drupal\typed_data\PlaceholderResolverTrait;
 
 /**
  * Trait for helping with social share link configuration.
@@ -15,9 +13,20 @@ use Drupal\typed_data\PlaceholderResolverTrait;
  */
 trait SocialShareLinkConfigurationTrait {
 
-  use PlaceholderResolverTrait;
-  use SocialShareLinkManagerTrait;
-  use TypedDataTrait;
+  /**
+   * Required method, usually provided by PlaceholderResolverTrait.
+   */
+  abstract function getPlaceholderResolver();
+
+  /**
+   * Required method, usually provided by SocialShareLinkManagerTrait.
+   */
+  abstract function getSocialShareLinkManager();
+
+  /**
+   * Required method, usually provided TypedDataTrait;
+   */
+  abstract function getTypedDataManager();
 
   /**
    * Prepares building the social link for the given plugin.
@@ -89,5 +98,6 @@ trait SocialShareLinkConfigurationTrait {
     }
     return $form;
   }
+
 
 }

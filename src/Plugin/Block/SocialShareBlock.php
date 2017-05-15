@@ -7,6 +7,8 @@ use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\social_share\SocialShareLinkConfigurationTrait;
+use Drupal\social_share\SocialShareLinkManagerTrait;
+use Drupal\typed_data\PlaceholderResolverTrait;
 
 /**
  * Provides a 'Social share links' block.
@@ -28,6 +30,8 @@ use Drupal\social_share\SocialShareLinkConfigurationTrait;
  */
 class SocialShareBlock extends BlockBase {
 
+  use PlaceholderResolverTrait;
+  use SocialShareLinkManagerTrait;
   use SocialShareLinkConfigurationTrait;
 
   /**

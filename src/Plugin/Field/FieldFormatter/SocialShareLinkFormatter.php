@@ -7,7 +7,10 @@ use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\Core\TypedData\TypedDataTrait;
 use Drupal\social_share\SocialShareLinkConfigurationTrait;
+use Drupal\social_share\SocialShareLinkManagerTrait;
+use Drupal\typed_data\PlaceholderResolverTrait;
 
 /**
  * Plugin implementation of the 'social_share_link' formatter.
@@ -22,6 +25,9 @@ use Drupal\social_share\SocialShareLinkConfigurationTrait;
  */
 class SocialShareLinkFormatter extends FormatterBase {
 
+  use PlaceholderResolverTrait;
+  use SocialShareLinkManagerTrait;
+  use TypedDataTrait;
   use SocialShareLinkConfigurationTrait;
 
   /**
