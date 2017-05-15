@@ -21,6 +21,10 @@
 
 {{ attach_library('social_share/popup') }}
 
+{% if twitter_url == '<current>' %}
+  {% set twitter_url = url('<current>')|render|striptags %}
+{% endif %}
+
 {% set url_params = {
   'text': shared_text,
   'url': twitter_url,

@@ -32,7 +32,7 @@ use Drupal\social_share\SocialShareLinkInterface;
  *     ),
  *     "twitter_url" = @ContextDefinition("uri",
  *       label = @Translation("Twitter share URL"),
- *       description = @Translation("The URL shared and shortened by twitter."),
+ *       description = @Translation("The URL shared and shortened by twitter. When set to '&lt;current&gt;', the current page's URL is used."),
  *       required = false
  *     ),
  *     "twitter_via" = @ContextDefinition("string",
