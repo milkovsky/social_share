@@ -2,7 +2,6 @@
 
 namespace Drupal\social_share\Plugin\SocialShareLink;
 
-use Drupal\Core\Annotation\Translation;
 use Drupal\Core\Plugin\ContextAwarePluginBase;
 use Drupal\Core\Template\Attribute;
 use Drupal\social_share\SocialShareLinkInterface;

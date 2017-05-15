@@ -89,11 +89,14 @@ trait SocialShareLinkConfigurationTrait {
     foreach ($used_context as $name => $context_definition) {
       $help = $this->t('Used by: %plugins', ['%plugins' => implode(', ', $used_by_plugins[$name])]);
       $form['context_values'][$name] = [
-        '#type' => 'textfield',
+        // For now, special case textarea here.
+        // @todo: Fix this properly by using widgets.
+        '#type' => $name == 'mail_body' ? 'textarea' : 'textfield',
         '#title' => $context_definition->getLabel(),
         '#description' => $context_definition->getDescription() . ' ' . $help,
         '#default_value' => isset($configuration['context_values'][$name]) ? $configuration['context_values'][$name] : $context_definition->getDefaultValue(),
         '#required' => $context_definition->isRequired(),
+        '#maxlength' => 1024,
       ];
     }
     return $form;
