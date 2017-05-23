@@ -64,9 +64,9 @@ class TwitterShareLink extends ContextAwarePluginBase implements SocialShareLink
   /**
    * {@inheritdoc}
    */
-  public function build() {
+  public function build($template_suffix = '') {
     $render =  [
-      '#theme' => $this->templateName,
+      '#theme' => $this->templateName . $template_suffix,
       '#attributes' => new Attribute([])
     ];
     foreach ($this->getContexts() as $name => $context) {

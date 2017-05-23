@@ -146,11 +146,12 @@ class SocialShareBlock extends BlockBase {
     $elements = [];
     $bubbleable_metadata = new BubbleableMetadata();
     $entity = $this->getContextValue('entity');
+    $template_suffix = '__block__' . $this->getMachineNameSuggestion();
 
     foreach ($this->configuration['allowed_plugins'] as $plugin_id) {
       try {
         $share_link = $this->prepareLinkBuild($this->configuration, $plugin_id, $bubbleable_metadata, $entity);
-        $elements[] = $share_link->build();
+        $elements[] = $share_link->build($template_suffix);
       }
       catch (PluginException $e) {
         // Silently ignore possibly outdated data values of not existing share

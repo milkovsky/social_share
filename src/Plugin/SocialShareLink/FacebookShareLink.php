@@ -73,10 +73,10 @@ class FacebookShareLink extends ContextAwarePluginBase implements SocialShareLin
   /**
    * {@inheritdoc}
    */
-  public function build() {
+  public function build($template_suffix = '') {
     $render =  [
-      '#theme' => $this->templateName,
-      '#attributes' => new Attribute([])
+      '#theme' => $this->templateName . $template_suffix,
+      '#attributes' => new Attribute([]),
     ];
     foreach ($this->getContexts() as $name => $context) {
       $render["#$name"] = $context->getContextValue();
