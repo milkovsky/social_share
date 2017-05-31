@@ -43,6 +43,7 @@ The default plugins coming with the module focus on the following:
    - `{{ media.field_description.processed|striptags }}`
    - `{{ media.field_image.entity|entity_url }}`
    - `{{ media.field_image.entity|entity_url }}`
+   
    Some examples from a block with node context, or a field on a node:
    - `{{ node.title.value }}`
    - `{{ node.field_teaser_media.entity.field_image.entity|entity_url }}`
