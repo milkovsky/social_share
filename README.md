@@ -38,14 +38,19 @@ The default plugins coming with the module focus on the following:
    the social share link formatter.
  * In the formatter settings, configure all needed context parameters. You may
    use token replacements for all entity fields and their properties.
-
+   
+   Some example token replacements, from a field on a media entity:
+   - `{{ media.field_description.processed|striptags }}`
+   - `{{ media.field_image.entity|entity_url }}`
+   - `{{ media.field_image.entity|entity_url }}`
+   Some examples from a block with node context, or a field on a node:
+   - `{{ node.title.value }}`
+   - `{{ node.field_teaser_media.entity.field_image.entity|entity_url }}`
 
 ### Todos
 
- - Add a block for configuring social share links.
- - First, get typed data token replacements documented and point to the
-  documentation. Second, there should be some UI for picking token replacements
-  once this is provided by the Typed Data module.
+ - Get typed data token replacements documented and point to the documentation.
+ - Add some UI for picking token replacements once this is provided by the Typed Data module.
 
 ## Development
 
