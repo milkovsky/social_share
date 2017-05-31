@@ -19,7 +19,7 @@
 
   Drupal.behaviors.socialSharePopup = {
     attach: function (context, settings) {
-      var links = document.querySelectorAll(".js-social-share-popup");
+      var links = context.querySelectorAll(".js-social-share-popup");
       if (links) {
         [].forEach.call(links, function(anchor) {
           anchor.addEventListener("click", function(e) {
