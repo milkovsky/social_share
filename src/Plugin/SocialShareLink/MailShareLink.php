@@ -49,11 +49,9 @@ class MailShareLink extends ContextAwarePluginBase implements SocialShareLinkInt
   public function build($template_suffix = '', $render_context = []) {
     $render =  [
       '#theme' => $this->templateName . $template_suffix,
-      '#attributes' => new Attribute([])
+      '#attributes' => new Attribute([]),
+      '#render_context' => $render_context,
     ];
-    foreach ($render_context as $name => $value) {
-      $render["#$name"] = $value;
-    }
     foreach ($this->getContexts() as $name => $context) {
       $render["#$name"] = $context->getContextValue();
     }
@@ -64,7 +62,11 @@ class MailShareLink extends ContextAwarePluginBase implements SocialShareLinkInt
    * {@inheritdoc}
    */
   public function getTemplateInfo() {
-    $info = [];
+    $info = [
+      'variables' => [
+        'render_context' => [],
+      ],
+    ];
     foreach ($this->getContextDefinitions() as $name => $definition) {
       $info['variables'][$name] = $definition->getDefaultValue();
     }
