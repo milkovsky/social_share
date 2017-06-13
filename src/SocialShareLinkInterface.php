@@ -23,11 +23,15 @@ interface SocialShareLinkInterface extends PluginInspectionInterface, ContextAwa
    *   context, e.g. the block or entity name. The string must include the
    *   leading two underscores, e.g. values would be "__node" or
    *   "__node__field_social".
+   * @param mixed[] $render_context
+   *   (optional) An array of additional render context to add to the links
+   *   render array. This allows adding custom template suggestions based
+   *   upon the provided rendered context via hook_theme_suggestions_HOOK().
    *
    * @return mixed[]
    *   The render array.
    */
-  public function build($template_suffix = '');
+  public function build($template_suffix = '', $render_context = []);
 
   /**
    * Gets the template info for the link's template(s).

@@ -37,12 +37,15 @@ class SocialShareLinkFormatter extends FormatterBase {
     $elements = [];
     $entity = $items->getEntity();
     $bubbleable_metadata = new BubbleableMetadata();
-    $template_suffix = '__' . $entity->getEntityTypeId() . '__' . $items->getFieldDefinition()->getName();
+    $template_suffix = '__' . $entity->getEntityTypeId() . '__' . $items->getFieldDefinition()->getName() . '__' . $this->viewMode;
 
     foreach ($items as $delta => $item) {
       try {
         $share_link = $this->prepareLinkBuild($this->settings, $item->value, $bubbleable_metadata, $entity);
-        $elements[$delta] = $share_link->build($template_suffix);
+        $elements[$delta] = $share_link->build($template_suffix, [
+          'entity' => $entity,
+          'view_mode' => $this->viewMode,
+        ]);
       }
       catch (PluginException $e) {
         // Silently ignore possibly outdated data values of not existing share
