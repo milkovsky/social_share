@@ -1,11 +1,10 @@
-drupal.social_share_16:
+popup:
   version: VERSION
-  css:
-    theme:
-      css/social_share_16.css: {}
+  js:
+    'js/popup.js': {}
+  dependencies:
+    - core/drupal
 
-drupal.social_share_32:
-  version: VERSION
-  css:
-    theme:
-      css/social_share_32.css: {}
+#infinite.external:
+#  js:
+#    //assets.pinterest.com/js/pinit.js: { type: external, attributes: { defer: true, async: true} }

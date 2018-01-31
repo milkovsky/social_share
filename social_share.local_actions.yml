@@ -1,5 +1,0 @@
-social_share_add_network:
-  route_name: social_share.add_network
-  title: 'Add Social Network'
-  appears_on:
-    - social_share.networks

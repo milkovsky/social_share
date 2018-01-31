@@ -1,208 +1,29 @@
 <?php
 
+use Drupal\social_share\SocialShareLinkManagerInterface;
+
 /**
  * @file
- * Implements configurable social network share links to nodes.
+ * Main module file.
  */
-
-use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
-use Drupal\node\NodeInterface;
-use Drupal\Core\Config\ConfigFactory;
-
-/**
- * Fetch all networks from the database.
- * @return Array Configurations of all social networks
- */
-function social_share_available_networks() {
-  $networks = &drupal_static(__FUNCTION__, array());
-
-  if (empty($networks)) {
-    $result = db_select('social_share_networks', 's')
-      ->fields('s')
-      ->orderBy('weight', 'ASC')
-      ->orderBy('human_name', 'ASC')
-      ->execute();
-
-    while ($network = $result->fetchAssoc()) {
-      $networks[] = $network;
-    }
-  }
-  return $networks;
-}
-
-/**
- * Fetch a single network from the database.
- * @param  String Social network machine name
- * @return Array Social network configuration
- */
-function social_share_get_network($machine_name) {
-  $networks = social_share_available_networks();
-  foreach($networks as $network) {
-    if ($network['machine_name'] == $machine_name) {
-      return $network;
-    }
-  }
-  return FALSE;
-}
-
-/**
- * Callback function for verifying whether a machine name exists or not.
- */
-function social_share_check_machine_name($machine_name) {
-  if (social_share_get_network($machine_name)) {
-    return TRUE;
-  }
-  return FALSE;
-}
-
-/**
- * Implements hook_node_view().
- */
-function social_share_node_view(NodeInterface $node, EntityViewDisplayInterface $display, $view_mode, $langcode) {
-  $type   = $node->getType();
-  $config = \Drupal::config('social_share.settings');
-  if ($config->get("type_{$type}")) {
-    $networks = social_share_available_networks();
-    $node->content['social_share'] = array(
-      '#theme' => 'social_share_links',
-      '#items' => $networks,
-      '#node'  => $node,
-    );
-    $node->content['social_share']['#attached'] = array(
-      'library' => array('social_share/drupal.social_share_32'),
-    );
-  }
-}
 
 /**
  * Implements hook_theme().
- * - social_share_links: Wrapper to contain individual social share links.
- * - social_share_link: Render a single share link (unstyled).
  */
-function social_share_theme() {
-  return array(
-    'social_share_links' => array(
-      'template'       => 'social_share_links',
-      'render element' => 'networks',
-    ),
-    'social_share_link' => array(
-      'template'       => 'social_share_link',
-      'render element' => 'network',
-    ),
-  );
+function social_share_theme($existing, $type, $theme, $path) {
+  $link_manager = \Drupal::service('social_share.link_manager');
+  assert($link_manager instanceof SocialShareLinkManagerInterface);
+  $info = [];
+  foreach ($link_manager->getDefinitions() as $plugin_id => $definition) {
+    $info = array_merge($info, $link_manager->createInstance($plugin_id)
+      ->getTemplateInfo());
+  }
+  return $info;
 }
 
 /**
- * Implements hook_entity_extra_field_info().
+ * Implements hook_field_widget_info_alter().
  */
-function social_share_entity_extra_field_info() {
-  $items      = array();
-  $config     = \Drupal::config('social_share.settings');
-  $node_types = array_keys(node_type_get_types());
-  foreach ($node_types as $type) {
-    if ($config->get("type_{$type}")) {
-      $items['node'][$type]['display'] = array(
-        'social_share'  => array(
-          'label'       => t('Social Share'),
-          'description' => t('Social Share Links'),
-          'weight'      => 10,
-        ),
-      );
-    }
-  }
-  return $items;
-}
-
-/**
- * Theme function to render a container full of share links (for a node).
- */
-function template_preprocess_social_share_links(&$variables) {
-  $token_service = \Drupal::service('token');
-  $config        = \Drupal::config('social_share.settings');
-  $language      = \Drupal::languageManager()->getCurrentLanguage();
-
-  $links    = $variables['networks'];
-  $networks = $links['#items'];
-  $label    = isset($links['#label']) ? $links['#label'] : FALSE;
-  $block    = isset($links['#block']) ? $links['#block'] : FALSE;
-  $node     = isset($links['#node']) ? $links['#node'] : FALSE;
-
-  // Default value for Token services.
-  $data     = array('node' => $node);
-  $options  = array('language' => $language, 'clear' => TRUE);
-
-
-  // Token services.
-  if ($block) {
-    if ($node) {
-      $replacements = array(
-        '%TITLE%' => $token_service->replace($config->get('share_title_block'), $data, $options),
-        '%DESC%'  => strip_tags($token_service->replace($config->get('share_description_block'), $data, $options)),
-        '%URL%'   => $token_service->replace($config->get('share_url_block'), $data, $options),
-        '%IMAGE%' => $token_service->replace($config->get('share_image_block'), $data, $options),
-      );
-    }
-    else {
-      $replacements = array(
-        '%TITLE%' => \Drupal::config('system.site')->get('name'),
-        '%DESC%'  => '',
-        '%URL%'   => url(isset($_GET['q']) ? $_GET['q'] : '<front>', array('absolute' => TRUE)),
-        '%IMAGE%' => '',
-      );
-    }
-  }
-  else {
-    $replacements = array(
-      '%TITLE%' => $token_service->replace($config->get('social_share_title'), $data, $options),
-      '%DESC%'  => strip_tags($token_service->replace($config->get('social_share_description'), $data, $options)),
-      '%URL%'   => $token_service->replace($config->get('social_share_url'), $data, $options),
-      '%IMAGE%' => $token_service->replace($config->get('social_share_image'), $data, $options),
-    );
-  }
-
-  foreach ($networks as $network) {
-    $link = array(
-      '#theme' => 'social_share_link',
-      '#item'  => $network,
-      '#replacements' => $replacements,
-    );
-    $variables['networks']['links'][] = drupal_render($link);
-  }
-  $variables['attributes']['class'] = array('social-share', 'clearfix');
-  $variables['share_label'] = ($label && $block) || $node ? $config->get("share_label_{$language->id}") : '';
-}
-
-/**
- * Theme function to render a single social share link (for a node)
- */
-function template_preprocess_social_share_link(&$variables) {
-  $config  = Drupal::config('social_share.settings');
-  $link    = $variables['network'];
-  $network = $link['#item'];
-  $replacements = $link['#replacements'];
-
-  // Trim title so it will fit in a tweet.
-  if ($network['machine_name'] == 'twitter' && $config->get('twitter_truncate')) {
-    if ((strlen($replacements['%URL%']) + strlen($replacements['%TITLE%'])) > 140) {
-      $length = 136 - strlen($replacements['%URL%']);
-      $replacements['%TITLE%'] = substr($replacements['%TITLE%'], 0, $length) . '...';
-    }
-  }
-
-  // Trim description as necessary
-  if (strlen($replacements['%DESC%']) > $config->get('max_length')) {
-    $replacements['%DESC%'] = substr($replacements['%DESC%'], 0, $config->get('max_length')) . '...';
-  }
-
-  // URL Encode replacement items:
-  foreach($replacements as $key => $value) {
-    $replacements[$key] = rawurlencode($value);
-  }
-
-  $variables['attributes'] = array(
-    'class'  => $network['locked'] ? "social-share-{$network['machine_name']}" : 'custom-network' ,
-    'title'  => $network['human_name'],
-    'href'   => str_replace(array_keys($replacements), array_values($replacements), $network['url']),
-    'target' => $config->get('new_window') ? '_blank' : '_self',
-  );
+function social_share_field_widget_info_alter(array &$info) {
+  $info['options_buttons']['field_types'][] = 'social_share_link';
 }
